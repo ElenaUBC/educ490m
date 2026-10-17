@@ -17,83 +17,117 @@
 
     /* ── SIDEBAR ── */
     #sidebar {
-      position: fixed;
-      top: 0; right: 0;
-      width: 200px;
-      height: 100vh;
-      background: #fff;
-      border-left: 3px solid #f9a8d4;
-      display: flex;
-      flex-direction: column;
-      padding: 16px 12px;
-      gap: 14px;
-      z-index: 100;
-      overflow-y: auto;
+      position: fixed; top: 0; right: 0;
+      width: 210px; height: 100vh;
+      background: #fff; border-left: 3px solid #f9a8d4;
+      display: flex; flex-direction: column;
+      padding: 14px 11px; gap: 12px;
+      z-index: 100; overflow-y: auto;
     }
-    #wallet-box h3, #inventory-box h3 { font-size: 0.9rem; margin-bottom: 6px; }
-    #wallet-box h3 { color: #d97706; }
-    #inventory-box h3 { color: #e05c9a; }
-    #wallet-box { background: #fffbeb; border: 2px solid #fde68a; border-radius: 12px; padding: 10px 12px; font-size: 0.95rem; }
-    #inventory-box { background: #fff0f7; border: 2px solid #f9a8d4; border-radius: 12px; padding: 10px 12px; flex: 1; }
-    #inventory-items { display: flex; flex-direction: column; gap: 7px; }
-    .inv-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; background: #fff; border: 1px solid #f9a8d4; border-radius: 8px; padding: 4px 7px; cursor: grab; }
-    .inv-item .inv-emoji { font-size: 1.3rem; }
-    .inv-empty { color: #bbb; font-size: 0.82rem; }
-
-    /* ── MAIN AREA ── */
-    #main {
-      margin-right: 200px;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 20px;
+    #wallet-box { background: #fffbeb; border: 2px solid #fde68a; border-radius: 12px; padding: 9px 11px; }
+    #wallet-box h3 { color: #d97706; font-size: 0.85rem; margin-bottom: 4px; }
+    #wallet-display { font-size: 1.1rem; font-weight: bold; color: #92400e; }
+    #mia-box { background: #f0f9ff; border: 2px solid #bae6fd; border-radius: 12px; padding: 9px 11px; }
+    #mia-box h3 { color: #0369a1; font-size: 0.85rem; margin-bottom: 6px; }
+    .mia-wish { font-size: 0.75rem; color: #0c4a6e; margin: 2px 0; }
+    #inventory-box { background: #fff0f7; border: 2px solid #f9a8d4; border-radius: 12px; padding: 9px 11px; flex: 1; }
+    #inventory-box h3 { color: #e05c9a; font-size: 0.85rem; margin-bottom: 6px; }
+    #inventory-items { display: flex; flex-direction: column; gap: 6px; }
+    .inv-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; background: #fff; border: 1px solid #f9a8d4; border-radius: 8px; padding: 3px 6px; cursor: grab; }
+    .inv-item .inv-emoji { font-size: 1.2rem; }
+    .inv-empty { color: #bbb; font-size: 0.8rem; }
+    #hint-btn {
+      background: #a78bfa; color: #fff; border: none; border-radius: 99px;
+      padding: 8px; font-size: 0.85rem; font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background 0.2s;
+    }
+    #hint-btn:hover { background: #7c5cbf; }
+    #hint-popup {
+      display: none; background: #ede9fe; border: 2px solid #a78bfa;
+      border-radius: 12px; padding: 10px; font-size: 0.78rem; color: #4c1d95;
+      line-height: 1.5;
     }
 
+    /* ── MAIN ── */
+    #main { margin-right: 210px; flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 20px; }
     .screen { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; max-width: 700px; }
     .screen.active { display: flex; }
 
-    .emoji-big { font-size: 4rem; margin-bottom: 10px; }
     h2 { font-size: 1.6rem; margin-bottom: 10px; color: #e05c9a; }
     p  { font-size: 1rem; line-height: 1.6; margin-bottom: 12px; color: #444; }
-
-    .bubble { background: #fff; border: 3px solid #f9a8d4; border-radius: 20px; padding: 12px 20px; margin-bottom: 18px; font-size: 1rem; line-height: 1.6; position: relative; }
+    .bubble { background: #fff; border: 3px solid #f9a8d4; border-radius: 20px; padding: 12px 20px; margin-bottom: 16px; font-size: 1rem; line-height: 1.7; position: relative; }
     .bubble::after { content: ''; position: absolute; bottom: -17px; left: 50%; transform: translateX(-50%); border: 8px solid transparent; border-top-color: #f9a8d4; }
-
-    .press-enter { margin-top: 16px; font-size: 0.95rem; color: #a78bfa; animation: pulse 1.5s infinite; }
+    .tag { display: inline-block; background: #fde68a; border-radius: 99px; padding: 3px 14px; font-size: 0.85rem; margin-bottom: 12px; color: #92400e; }
+    .small-hint { font-size: 0.82rem; color: #aaa; margin-top: 5px; }
+    .press-enter { margin-top: 14px; font-size: 0.92rem; color: #a78bfa; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-    .tag { display: inline-block; background: #fde68a; border-radius: 99px; padding: 3px 14px; font-size: 0.85rem; margin-bottom: 14px; color: #92400e; }
-    .hint { font-size: 0.85rem; color: #999; margin-top: 6px; }
-
-    .btn { background: #e05c9a; color: #fff; border: none; border-radius: 99px; padding: 9px 26px; font-size: 0.95rem; font-family: inherit; cursor: pointer; margin-top: 12px; transition: background 0.2s; }
+    .btn { background: #e05c9a; color: #fff; border: none; border-radius: 99px; padding: 9px 24px; font-size: 0.92rem; font-family: inherit; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
     .btn:hover { background: #c0487f; }
-    .btn.secondary { background: #a78bfa; }
-    .btn.secondary:hover { background: #7c5cbf; }
-    .btn.exit { background: #ccc; color: #555; }
-    .btn.exit:hover { background: #bbb; }
-    .btn-row { display: flex; gap: 12px; margin-top: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn.exit { background: #d1d5db; color: #555; }
+    .btn.exit:hover { background: #9ca3af; }
+    .btn-row { display: flex; gap: 10px; margin-top: 12px; justify-content: center; flex-wrap: wrap; }
+    .inline-error { color: #dc2626; font-size: 0.85rem; margin-top: 6px; min-height: 1.2em; }
+
+    /* ── AVATAR (CSS squirrel) ── */
+    .squirrel-wrap { position: absolute; bottom: 54px; transition: left 0.7s ease-in-out; z-index: 10; display: flex; flex-direction: column; align-items: center; }
+    .squirrel-body { position: relative; width: 36px; }
+    /* tail */
+    .sq-tail { width: 22px; height: 28px; background: #b45309; border-radius: 50% 80% 10% 80%; position: absolute; bottom: 2px; right: -14px; transform: rotate(-20deg); z-index: 0; }
+    /* body */
+    .sq-torso { width: 26px; height: 30px; background: #d97706; border-radius: 40% 40% 50% 50%; position: relative; z-index: 1; margin: 0 auto; }
+    /* belly */
+    .sq-belly { width: 14px; height: 18px; background: #fde68a; border-radius: 50%; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); }
+    /* head */
+    .sq-head { width: 24px; height: 22px; background: #d97706; border-radius: 50% 50% 40% 40%; margin: 0 auto; position: relative; z-index: 2; }
+    /* ears */
+    .sq-ear { width: 8px; height: 10px; background: #b45309; border-radius: 50% 50% 0 0; position: absolute; top: -7px; }
+    .sq-ear.left  { left: 2px; }
+    .sq-ear.right { right: 2px; }
+    /* inner ear */
+    .sq-ear::after { content: ''; width: 4px; height: 6px; background: #fca5a5; border-radius: 50% 50% 0 0; position: absolute; top: 1px; left: 2px; }
+    /* eyes */
+    .sq-eye { width: 5px; height: 5px; background: #1c1917; border-radius: 50%; position: absolute; top: 7px; }
+    .sq-eye.left  { left: 4px; }
+    .sq-eye.right { right: 4px; }
+    /* nose */
+    .sq-nose { width: 4px; height: 3px; background: #78350f; border-radius: 50%; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); }
+    /* legs */
+    .sq-legs { display: flex; justify-content: center; gap: 6px; margin-top: -2px; position: relative; z-index: 1; }
+    .sq-leg { width: 7px; height: 10px; background: #d97706; border-radius: 0 0 4px 4px; }
+    /* cart */
+    .sq-cart { font-size: 1.1rem; margin-top: 1px; }
+    /* flip */
+    .squirrel-wrap.flip { transform: scaleX(-1); }
 
     /* ── MAP ── */
     #screen-map { max-width: 700px; }
-    #map-title { font-size: 1.1rem; color: #e05c9a; margin-bottom: 10px; }
-    #map-area { position: relative; width: 680px; height: 220px; background: #d4edda; border-radius: 16px; overflow: hidden; border: 3px solid #a8d5b5; }
-    #map-area::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 60px; background: #bde0fe; }
-    #pavement { position: absolute; bottom: 0; left: 0; right: 0; height: 52px; background: #c9c9c9; border-top: 4px solid #aaa; }
-    #grass { position: absolute; bottom: 52px; left: 0; right: 0; height: 14px; background: #6abf69; }
-    .shop { position: absolute; bottom: 66px; width: 110px; text-align: center; cursor: pointer; user-select: none; }
-    .shop:hover .shop-building { filter: brightness(1.1); }
-    .shop-building { width: 100px; height: 88px; margin: 0 auto; border-radius: 10px 10px 0 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 5px; position: relative; transition: filter 0.2s; }
-    .shop-roof { position: absolute; top: -18px; left: -4px; right: -4px; height: 26px; clip-path: polygon(0% 100%, 50% 0%, 100% 100%); }
-    .shop-door { width: 24px; height: 33px; background: #5c3d1e; border-radius: 12px 12px 0 0; margin-top: auto; }
-    .shop-sign { position: absolute; top: 7px; font-size: 0.58rem; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.4); padding: 2px 4px; background: rgba(0,0,0,0.18); border-radius: 5px; white-space: nowrap; }
-    .shop-emoji { font-size: 1.4rem; position: absolute; top: -7px; right: -5px; }
-    .shop-label { font-size: 0.67rem; margin-top: 3px; color: #333; }
+    #map-area { position: relative; width: 680px; height: 230px; background: #d4edda; border-radius: 16px; overflow: hidden; border: 3px solid #a8d5b5; }
+    #map-area::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 65px; background: linear-gradient(180deg,#93c5fd,#bde0fe); }
+    /* clouds */
+    #map-area::after { content: '☁️  ☁️'; position: absolute; top: 8px; left: 30px; font-size: 1.4rem; opacity: 0.8; }
+    #pavement { position: absolute; bottom: 0; left: 0; right: 0; height: 54px; background: #9ca3af; border-top: 4px solid #6b7280; }
+    #pavement::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 4px; background: repeating-linear-gradient(90deg,#fff 0,#fff 20px,transparent 20px,transparent 40px); opacity: 0.3; }
+    #grass { position: absolute; bottom: 54px; left: 0; right: 0; height: 18px; background: linear-gradient(180deg,#4ade80,#16a34a); }
+    .shop { position: absolute; bottom: 72px; width: 110px; text-align: center; cursor: pointer; user-select: none; }
+    .shop:hover .shop-building { filter: brightness(1.12); }
+    .shop-building { width: 100px; height: 90px; margin: 0 auto; border-radius: 10px 10px 0 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 5px; position: relative; transition: filter 0.2s; box-shadow: 2px 2px 6px rgba(0,0,0,0.15); }
+    .shop-roof { position: absolute; top: -20px; left: -5px; right: -5px; height: 28px; clip-path: polygon(0% 100%, 50% 0%, 100% 100%); }
+    .shop-window { width: 22px; height: 18px; background: #bae6fd; border: 2px solid #7dd3fc; border-radius: 3px; position: absolute; top: 18px; left: 10px; }
+    .shop-window::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #7dd3fc; }
+    .shop-window2 { width: 22px; height: 18px; background: #bae6fd; border: 2px solid #7dd3fc; border-radius: 3px; position: absolute; top: 18px; right: 10px; }
+    .shop-window2::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #7dd3fc; }
+    .shop-door { width: 24px; height: 34px; background: #5c3d1e; border-radius: 12px 12px 0 0; margin-top: auto; }
+    .shop-sign { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); font-size: 0.58rem; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); padding: 2px 5px; background: rgba(0,0,0,0.25); border-radius: 5px; white-space: nowrap; }
+    .shop-label { font-size: 0.67rem; margin-top: 3px; color: #1c1917; font-weight: bold; }
     .shop.done .shop-label::before { content: '✅ '; }
-    #squirrel { position: absolute; bottom: 54px; font-size: 1.9rem; transition: left 0.6s ease-in-out; z-index: 10; user-select: none; display: inline-block; }
+    /* progress dots on map */
+    #progress-bar { display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
+    .prog-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; border: 2px solid #d1d5db; transition: background 0.3s; }
+    .prog-dot.done { background: #4ade80; border-color: #16a34a; }
 
     /* ── LETTER BOXES ── */
-    .letter-row { display: flex; gap: 12px; margin: 18px 0; }
+    .letter-row { display: flex; gap: 12px; margin: 16px 0; }
     .letter-box { width: 58px; height: 58px; border: 3px solid #ccc; border-radius: 12px; font-size: 1.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; background: #fff; transition: border-color 0.2s, background 0.2s; text-transform: uppercase; color: #e05c9a; }
     .letter-box.filled  { border-color: #e05c9a; background: #fff0f7; }
     .letter-box.correct { border-color: #4ade80; background: #f0fdf4; color: #16a34a; }
@@ -101,52 +135,70 @@
     .letter-box.active  { border-color: #a78bfa; box-shadow: 0 0 0 3px #ede9fe; }
 
     /* ── DRAG STORES ── */
-    .store-layout { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 14px; }
-    .items-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .shop-item { width: 95px; background: #fff; border: 2px solid #ddd; border-radius: 12px; padding: 8px 5px; text-align: center; cursor: grab; user-select: none; transition: box-shadow 0.2s; touch-action: none; }
-    .shop-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
-    .shop-item .item-emoji { font-size: 1.9rem; }
-    .shop-item .item-name  { font-size: 0.68rem; margin-top: 3px; color: #333; }
-    .shop-item .item-price { font-size: 0.74rem; color: #d97706; font-weight: bold; margin-top: 2px; }
-    .shop-item.in-cart { opacity: 0.4; cursor: not-allowed; }
-
-    .cart-row { display: flex; gap: 14px; width: 100%; justify-content: center; align-items: flex-start; }
-    .cart-area { flex: 1; max-width: 340px; min-height: 100px; background: #fff0f7; border: 2px dashed #f9a8d4; border-radius: 14px; padding: 10px 12px; }
-    .cart-area h3 { color: #e05c9a; font-size: 0.85rem; margin-bottom: 7px; }
+    .store-layout { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 12px; }
+    .items-grid { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; }
+    .shop-item { width: 92px; background: #fff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 8px 5px; text-align: center; cursor: grab; user-select: none; transition: box-shadow 0.2s, border-color 0.2s; touch-action: none; }
+    .shop-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #f9a8d4; }
+    .shop-item .item-emoji { font-size: 1.8rem; }
+    .shop-item .item-name  { font-size: 0.67rem; margin-top: 3px; color: #333; }
+    .shop-item .item-price { font-size: 0.72rem; color: #d97706; font-weight: bold; margin-top: 2px; }
+    .shop-item.in-cart { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    .cart-row { display: flex; gap: 12px; width: 100%; justify-content: center; align-items: flex-start; }
+    .cart-area { flex: 1; max-width: 320px; min-height: 90px; background: #fff0f7; border: 2px dashed #f9a8d4; border-radius: 14px; padding: 9px 11px; }
+    .cart-area h3 { color: #e05c9a; font-size: 0.82rem; margin-bottom: 6px; }
     .cart-area.drag-over { background: #ffe4f0; border-color: #e05c9a; }
-    .returns-area { flex: 1; max-width: 240px; min-height: 100px; background: #f0fdf4; border: 2px dashed #4ade80; border-radius: 14px; padding: 10px 12px; }
-    .returns-area h3 { color: #16a34a; font-size: 0.85rem; margin-bottom: 7px; }
+    .returns-area { flex: 1; max-width: 220px; min-height: 90px; background: #f0fdf4; border: 2px dashed #4ade80; border-radius: 14px; padding: 9px 11px; }
+    .returns-area h3 { color: #16a34a; font-size: 0.82rem; margin-bottom: 6px; }
     .returns-area.drag-over { background: #dcfce7; border-color: #16a34a; }
-    .cart-item { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #fff; border: 1px solid #f9a8d4; border-radius: 8px; padding: 3px 7px; margin-bottom: 5px; font-size: 0.75rem; }
+    .cart-item { display: flex; align-items: center; justify-content: space-between; width: 100%; background: #fff; border: 1px solid #f9a8d4; border-radius: 8px; padding: 3px 7px; margin-bottom: 5px; font-size: 0.73rem; }
     .cart-item .ci-emoji { font-size: 1.1rem; margin-right: 3px; }
-    .cart-item .ci-return { cursor: pointer; color: #f87171; font-size: 0.95rem; margin-left: 3px; }
-    .cart-total { margin-top: 6px; font-size: 0.82rem; color: #d97706; font-weight: bold; }
-    .return-note { font-size: 0.68rem; color: #aaa; margin-top: 4px; }
+    .cart-item .ci-return { cursor: pointer; color: #f87171; font-size: 0.9rem; margin-left: 3px; }
+    .cart-total { margin-top: 5px; font-size: 0.8rem; color: #d97706; font-weight: bold; }
+    .return-note { font-size: 0.67rem; color: #aaa; margin-top: 4px; line-height: 1.4; }
 
     /* ── PIZZA ── */
     .number-input-row { display: flex; align-items: center; gap: 14px; margin: 10px 0; }
     .num-btn { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #e05c9a; background: #fff; font-size: 1.3rem; cursor: pointer; color: #e05c9a; font-family: inherit; }
     .num-btn:hover { background: #fff0f7; }
     .num-display { font-size: 1.9rem; font-weight: bold; color: #e05c9a; min-width: 38px; text-align: center; }
+    .pizza-visual { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; min-height: 44px; margin: 6px 0; }
+    .pizza-slice { font-size: 1.8rem; transition: transform 0.2s; }
+
+    /* ── MEET ── */
+    .mia-avatar { font-size: 5rem; margin-bottom: 8px; }
+    .wish-list { background: #f0f9ff; border: 2px solid #bae6fd; border-radius: 14px; padding: 12px 18px; margin-bottom: 16px; text-align: left; font-size: 0.95rem; line-height: 1.8; }
+    .wish-list strong { color: #0369a1; }
 
     /* ── RESULT ── */
-    .party-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 14px 0; }
-    .party-item { font-size: 2.3rem; }
+    .party-scene { font-size: 2.2rem; margin: 12px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .stars { font-size: 2rem; margin: 8px 0; letter-spacing: 4px; }
+    .result-detail { font-size: 0.88rem; color: #555; margin-top: 8px; text-align: left; background: #f9fafb; border-radius: 10px; padding: 10px 14px; width: 100%; max-width: 420px; line-height: 1.8; }
+    .result-detail .ok  { color: #16a34a; }
+    .result-detail .bad { color: #dc2626; }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR (always visible) -->
+<!-- SIDEBAR -->
 <div id="sidebar">
   <div id="wallet-box">
     <h3>👛 Wallet</h3>
     <div id="wallet-display">100 🪙</div>
   </div>
+  <div id="mia-box">
+    <h3>🦄 Mia wants...</h3>
+    <div class="mia-wish">🎨 Theme: <strong>Unicorn</strong></div>
+    <div class="mia-wish">🎂 A birthday cake</div>
+    <div class="mia-wish">🎈 Unicorn decorations</div>
+    <div class="mia-wish">🍕 Pizza for 9 friends</div>
+    <div class="mia-wish">🍿 Snacks to munch</div>
+  </div>
   <div id="inventory-box">
-    <h3>🎒 Inventory</h3>
+    <h3>🎒 Bag</h3>
     <div id="inventory-items"><span class="inv-empty">Nothing yet!</span></div>
   </div>
+  <button id="hint-btn" onclick="toggleHint()">❓ Need a hint?</button>
+  <div id="hint-popup"></div>
 </div>
 
 <!-- MAIN -->
@@ -154,71 +206,130 @@
 
 <!-- MEET -->
 <div class="screen active" id="screen-meet">
-  <div class="emoji-big">🎀</div>
-  <h2>Meet Your Friend!</h2>
-  <div class="bubble">
-    Hi! I'm <strong>Mia</strong> 🌸<br>
-    My birthday is <strong>today</strong> and I want a<br>
-    <strong>unicorn-themed</strong> 🦄 party!<br>
-    Can you help me get everything ready?
+  <div class="mia-avatar">🧒🏻</div>
+  <h2>Hi! I'm Mia! 🌸</h2>
+  <div class="wish-list">
+    My birthday is <strong>today</strong>! 🎉<br>
+    I want a <strong>unicorn 🦄</strong> party!<br>
+    Can you help me get everything ready?<br><br>
+    I need:<br>
+    🎂 A birthday cake<br>
+    🎈 Unicorn decorations<br>
+    🍕 Pizza for all my friends<br>
+    🍿 Some yummy snacks
   </div>
-  <p>Explore the neighbourhood, visit the shops, and prepare the party!</p>
-  <div class="press-enter">Press <strong>Enter</strong> to start →</div>
+  <div class="press-enter">Press <strong>Enter</strong> to head outside →</div>
 </div>
 
 <!-- MAP -->
 <div class="screen" id="screen-map">
-  <div id="map-title">🗺️ Mia's Neighbourhood — click a shop to visit!</div>
   <div id="map-area">
     <div id="pavement"></div>
     <div id="grass"></div>
-    <div class="shop" id="shop-bakery" style="left:20px" onclick="walkTo('bakery')">
-      <div class="shop-building" style="background:#f9a8d4;"><div class="shop-roof" style="background:#e05c9a;"></div><div class="shop-sign">Bakery</div><div class="shop-emoji">🎂</div><div class="shop-door"></div></div>
+
+    <div class="shop" id="shop-bakery" style="left:18px" onclick="walkTo('bakery')">
+      <div class="shop-building" style="background:#fce7f3;">
+        <div class="shop-roof" style="background:#e05c9a;"></div>
+        <div class="shop-window"></div><div class="shop-window2"></div>
+        <div class="shop-sign">Bakery</div>
+        <div class="shop-door"></div>
+      </div>
       <div class="shop-label">🎂 Bakery</div>
     </div>
-    <div class="shop" id="shop-party" style="left:160px" onclick="walkTo('party')">
-      <div class="shop-building" style="background:#c4b5fd;"><div class="shop-roof" style="background:#7c3aed;"></div><div class="shop-sign">Party Store</div><div class="shop-emoji">🎈</div><div class="shop-door"></div></div>
+
+    <div class="shop" id="shop-party" style="left:158px" onclick="walkTo('party')">
+      <div class="shop-building" style="background:#ede9fe;">
+        <div class="shop-roof" style="background:#7c3aed;"></div>
+        <div class="shop-window"></div><div class="shop-window2"></div>
+        <div class="shop-sign">Party Store</div>
+        <div class="shop-door"></div>
+      </div>
       <div class="shop-label">🎈 Party Store</div>
     </div>
-    <div class="shop" id="shop-grocery" style="left:300px" onclick="walkTo('grocery')">
-      <div class="shop-building" style="background:#bbf7d0;"><div class="shop-roof" style="background:#16a34a;"></div><div class="shop-sign">Grocery</div><div class="shop-emoji">🛒</div><div class="shop-door"></div></div>
+
+    <div class="shop" id="shop-grocery" style="left:298px" onclick="walkTo('grocery')">
+      <div class="shop-building" style="background:#dcfce7;">
+        <div class="shop-roof" style="background:#16a34a;"></div>
+        <div class="shop-window"></div><div class="shop-window2"></div>
+        <div class="shop-sign">Grocery</div>
+        <div class="shop-door"></div>
+      </div>
       <div class="shop-label">🛒 Grocery</div>
     </div>
-    <div class="shop" id="shop-pizza" style="left:440px" onclick="walkTo('pizza')">
-      <div class="shop-building" style="background:#fed7aa;"><div class="shop-roof" style="background:#ea580c;"></div><div class="shop-sign">Pizza Place</div><div class="shop-emoji">🍕</div><div class="shop-door"></div></div>
+
+    <div class="shop" id="shop-pizza" style="left:438px" onclick="walkTo('pizza')">
+      <div class="shop-building" style="background:#fff7ed;">
+        <div class="shop-roof" style="background:#ea580c;"></div>
+        <div class="shop-window"></div><div class="shop-window2"></div>
+        <div class="shop-sign">Pizza Place</div>
+        <div class="shop-door"></div>
+      </div>
       <div class="shop-label">🍕 Pizza Place</div>
     </div>
-    <div class="shop" id="shop-partyroom" style="left:570px" onclick="walkTo('partyroom')">
-      <div class="shop-building" style="background:#fde68a;"><div class="shop-roof" style="background:#d97706;"></div><div class="shop-sign">Party Room</div><div class="shop-emoji">🎉</div><div class="shop-door"></div></div>
+
+    <div class="shop" id="shop-partyroom" style="left:568px" onclick="walkTo('partyroom')">
+      <div class="shop-building" style="background:#fefce8;">
+        <div class="shop-roof" style="background:#ca8a04;"></div>
+        <div class="shop-window"></div><div class="shop-window2"></div>
+        <div class="shop-sign">Party Room</div>
+        <div class="shop-door"></div>
+      </div>
       <div class="shop-label">🎉 Party Room</div>
     </div>
-    <div id="squirrel" style="left:14px">🐿️</div>
+
+    <!-- CSS squirrel avatar -->
+    <div class="squirrel-wrap" id="squirrel" style="left:12px">
+      <div class="squirrel-body">
+        <div class="sq-tail"></div>
+        <div class="sq-head">
+          <div class="sq-ear left"></div>
+          <div class="sq-ear right"></div>
+          <div class="sq-eye left"></div>
+          <div class="sq-eye right"></div>
+          <div class="sq-nose"></div>
+        </div>
+        <div class="sq-torso"><div class="sq-belly"></div></div>
+        <div class="sq-legs"><div class="sq-leg"></div><div class="sq-leg"></div></div>
+      </div>
+      <div class="sq-cart">🛒</div>
+    </div>
+  </div>
+  <div id="progress-bar">
+    <div class="prog-dot" id="dot-bakery" title="Bakery"></div>
+    <div class="prog-dot" id="dot-party"  title="Party Store"></div>
+    <div class="prog-dot" id="dot-grocery" title="Grocery"></div>
+    <div class="prog-dot" id="dot-pizza"  title="Pizza Place"></div>
   </div>
 </div>
 
 <!-- BAKERY -->
 <div class="screen" id="screen-bakery">
   <div class="tag">🎂 The Bakery</div>
-  <div class="emoji-big">🎂</div>
   <h2>Order the Cake!</h2>
-  <div class="bubble">Spell the word on your keyboard to order a cake! <strong>30 🪙</strong></div>
+  <div class="bubble">
+    The baker is waiting! Type the name of what you want to order.<br>
+    <strong>Cost: 30 🪙</strong>
+  </div>
   <div class="letter-row">
     <div class="letter-box active" id="box-0"></div>
     <div class="letter-box" id="box-1"></div>
     <div class="letter-box" id="box-2"></div>
     <div class="letter-box" id="box-3"></div>
   </div>
-  <p class="hint">Use <strong>Backspace</strong> to fix a letter</p>
+  <div class="inline-error" id="bakery-error"></div>
   <div class="btn-row">
-    <button class="btn exit" onclick="exitShop('bakery')">← Exit</button>
+    <button class="btn exit" onclick="exitShop('bakery')">← Leave</button>
   </div>
 </div>
 
 <!-- PARTY STORE -->
 <div class="screen" id="screen-party">
   <div class="tag">🎈 Party Store</div>
-  <h2>Pick Your Decorations!</h2>
-  <div class="bubble">Mia wants a <strong>unicorn 🦄</strong> theme! Drag items into the cart.<br>To return an item, drag it from your 🎒 inventory into the Returns box.</div>
+  <h2>Pick Decorations!</h2>
+  <div class="bubble">
+    Remember Mia's theme! Drag items into your cart 🛒<br>
+    Changed your mind? Drag from your 🎒 bag into Returns ↩️
+  </div>
   <div class="store-layout">
     <div class="items-grid" id="party-items-grid"></div>
     <div class="cart-row">
@@ -229,12 +340,13 @@
       </div>
       <div class="returns-area" id="party-returns" ondragover="cartDragOver(event)" ondrop="returnsDrop(event)" ondragleave="cartDragLeave(event)">
         <h3>↩️ Returns</h3>
-        <div class="return-note">Drag an item here to return it and get your coins back</div>
+        <div class="return-note">Drag a bag item here to return it and get coins back</div>
       </div>
     </div>
   </div>
+  <div class="inline-error" id="party-error"></div>
   <div class="btn-row">
-    <button class="btn exit" onclick="exitShop('party')">← Exit</button>
+    <button class="btn exit" onclick="exitShop('party')">← Leave</button>
     <button class="btn" onclick="payShop('party')">Pay 🪙</button>
   </div>
 </div>
@@ -243,7 +355,7 @@
 <div class="screen" id="screen-grocery">
   <div class="tag">🛒 Grocery Store</div>
   <h2>Pick the Snacks!</h2>
-  <div class="bubble">Drag snacks into the cart to buy them!</div>
+  <div class="bubble">Drag snacks into your cart. Watch your wallet!</div>
   <div class="store-layout">
     <div class="items-grid" id="grocery-items-grid"></div>
     <div class="cart-row">
@@ -254,8 +366,9 @@
       </div>
     </div>
   </div>
+  <div class="inline-error" id="grocery-error"></div>
   <div class="btn-row">
-    <button class="btn exit" onclick="exitShop('grocery')">← Exit</button>
+    <button class="btn exit" onclick="exitShop('grocery')">← Leave</button>
     <button class="btn" onclick="payShop('grocery')">Pay 🪙</button>
   </div>
 </div>
@@ -263,36 +376,39 @@
 <!-- PIZZA -->
 <div class="screen" id="screen-pizza">
   <div class="tag">🍕 Pizza Place</div>
-  <div class="emoji-big">🍕</div>
-  <h2>Order the Pizza!</h2>
+  <h2>Order Pizza!</h2>
   <div class="bubble" id="pizza-question"></div>
+  <div class="pizza-visual" id="pizza-visual"></div>
   <div class="number-input-row">
     <button class="num-btn" onclick="changeCount(-1)">−</button>
     <div class="num-display" id="pizza-count">0</div>
     <button class="num-btn" onclick="changeCount(1)">+</button>
   </div>
-  <p class="hint">Each pizza feeds <strong>4 people</strong>. Price: <strong>8 🪙 each</strong></p>
+  <p class="small-hint">Each pizza has <strong>4 slices</strong> · <strong>8 🪙 each</strong></p>
+  <div class="inline-error" id="pizza-error"></div>
   <div class="btn-row">
-    <button class="btn exit" onclick="exitShop('pizza')">← Exit</button>
+    <button class="btn exit" onclick="exitShop('pizza')">← Leave</button>
     <button class="btn" onclick="confirmPizza()">Place Order 🍕</button>
   </div>
 </div>
 
 <!-- PARTY ROOM -->
 <div class="screen" id="screen-partyroom">
-  <div class="tag">🎉 Party Room</div>
-  <div class="emoji-big">🎉</div>
-  <h2>Are you ready to start the party?</h2>
-  <div class="bubble">Have you collected everything Mia needs?<br>You can still go back and shop!</div>
+  <div style="font-size:4rem;margin-bottom:10px">🎉</div>
+  <h2>The Party Room!</h2>
+  <div class="bubble">
+    Are you ready to start Mia's party?<br>
+    You can still go back and shop if you need to!
+  </div>
   <div class="btn-row">
     <button class="btn exit" onclick="showScreen('map')">← Not yet</button>
-    <button class="btn" onclick="startParty()">Yes, let's party! 🎊</button>
+    <button class="btn" onclick="startParty()">Start the party! 🎊</button>
   </div>
 </div>
 
 <!-- FEEDBACK -->
 <div class="screen" id="screen-feedback">
-  <div class="emoji-big" id="fb-emoji"></div>
+  <div style="font-size:3.5rem;margin-bottom:10px" id="fb-emoji"></div>
   <h2 id="fb-title"></h2>
   <div class="bubble" id="fb-msg"></div>
   <div class="press-enter">Press <strong>Enter</strong> to continue →</div>
@@ -300,12 +416,13 @@
 
 <!-- RESULT -->
 <div class="screen" id="screen-result">
-  <div class="emoji-big" id="result-emoji"></div>
+  <div style="font-size:3.5rem;margin-bottom:8px" id="result-emoji"></div>
   <h2 id="result-title"></h2>
   <div class="stars" id="result-stars"></div>
   <div class="bubble" id="result-bubble"></div>
-  <div class="party-grid" id="result-items"></div>
-  <div class="press-enter">Press <strong>Enter</strong> to play again →</div>
+  <div class="party-scene" id="result-items"></div>
+  <div class="result-detail" id="result-detail"></div>
+  <div class="press-enter" style="margin-top:16px">Press <strong>Enter</strong> to play again →</div>
 </div>
 
 </div><!-- end #main -->
@@ -313,31 +430,20 @@
 <script>
   // ── STATE ──
   let wallet = 100;
-  let inventory = []; // { id, emoji, name, price, source }
+  let inventory = [];
   let activeScreen = 'meet';
-  let squirrelX = 14;
+  let squirrelX = 12;
   let walking = false;
   let afterFeedback = 'map';
-
-  // letter
+  let cakeBought = false;
   let lCurrent = 0, lTyped = ['','','',''];
-
-  // drag
-  let dragItemId = null;
-  let dragSource = null; // 'shop' or 'inventory'
-
-  // carts
-  let partyCart = [];
-  let groceryCart = [];
-
-  // pizza
+  let dragItemId = null, dragSource = null;
+  let partyCart = [], groceryCart = [];
   let pizzaCount = 0;
   const pizzaGuests = 9;
-  const pizzaCorrect = Math.ceil(pizzaGuests / 4);
+  const shopX = { bakery:48, party:188, grocery:328, pizza:468, partyroom:598 };
 
-  const shopX = { bakery:50, party:190, grocery:330, pizza:470, partyroom:600 };
-
-  // ── SHOP DATA ──
+  // ── DATA ──
   const partyItems = [
     { id:'p1', emoji:'🦄', name:'Unicorn Banner',    price:12, theme:'unicorn' },
     { id:'p2', emoji:'🌈', name:'Rainbow Streamers', price:8,  theme:'unicorn' },
@@ -347,25 +453,43 @@
     { id:'p6', emoji:'🦖', name:'Dino Balloons',      price:9,  theme:'dino'    },
     { id:'p7', emoji:'🚀', name:'Space Streamers',    price:8,  theme:'space'   },
     { id:'p8', emoji:'🌙', name:'Moon Garland',       price:14, theme:'space'   },
-    { id:'p9', emoji:'🏴‍☠️', name:'Pirate Flag',       price:7,  theme:'pirate'  },
+    { id:'p9', emoji:'🏴‍☠️', name:'Pirate Flag',      price:7,  theme:'pirate'  },
   ];
 
   const groceryItems = [
-    { id:'g1', emoji:'🍓', name:'Strawberries', price:5  },
-    { id:'g2', emoji:'🍿', name:'Popcorn',      price:4  },
-    { id:'g3', emoji:'🧁', name:'Cupcakes',     price:8  },
-    { id:'g4', emoji:'🍉', name:'Watermelon',   price:6  },
-    { id:'g5', emoji:'🥨', name:'Pretzels',     price:4  },
-    { id:'g6', emoji:'🍬', name:'Candy Mix',    price:5  },
-    { id:'g7', emoji:'🧃', name:'Juice Boxes',  price:5  },
-    { id:'g8', emoji:'🍪', name:'Cookies',      price:6  },
+    { id:'g1', emoji:'🍓', name:'Strawberries', price:5 },
+    { id:'g2', emoji:'🍿', name:'Popcorn',      price:4 },
+    { id:'g3', emoji:'🧁', name:'Cupcakes',     price:8 },
+    { id:'g4', emoji:'🍉', name:'Watermelon',   price:6 },
+    { id:'g5', emoji:'🥨', name:'Pretzels',     price:4 },
+    { id:'g6', emoji:'🍬', name:'Candy Mix',    price:5 },
+    { id:'g7', emoji:'🧃', name:'Juice Boxes',  price:5 },
+    { id:'g8', emoji:'🍪', name:'Cookies',      price:6 },
   ];
+
+  // hints per screen
+  const hints = {
+    map:      'Click on a shop to walk there! Start anywhere you like.',
+    bakery:   'Think about what you need to order. Type the letters one by one using your keyboard!',
+    party:    "Mia loves unicorns 🦄! Look for items that match her theme. Drag them into the cart.",
+    grocery:  'Drag snacks into the cart. Keep an eye on your wallet — you might not be able to buy everything!',
+    pizza:    'Count how many friends are coming. Each pizza has 4 slices. How many pizzas do you need so everyone gets at least one slice?',
+    partyroom:'Check your bag on the right. Does Mia have a cake, decorations, pizza, and snacks? If yes — start the party!',
+    feedback: 'Press Enter to keep going!',
+    result:   'See how Mia feels about her party! Press Enter to try again.',
+  };
 
   // ── HELPERS ──
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + id).classList.add('active');
     activeScreen = id;
+    document.getElementById('hint-popup').style.display = 'none';
+  }
+
+  function setError(id, msg) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = msg; setTimeout(() => { el.textContent = ''; }, 3000); }
   }
 
   function updateWallet() {
@@ -374,27 +498,21 @@
 
   function updateInventory() {
     const el = document.getElementById('inventory-items');
-    if (inventory.length === 0) {
-      el.innerHTML = '<span class="inv-empty">Nothing yet!</span>';
-      return;
-    }
-    // group by name for display
+    if (inventory.length === 0) { el.innerHTML = '<span class="inv-empty">Nothing yet!</span>'; return; }
     const counts = {};
     inventory.forEach(item => {
-      const key = item.name;
-      if (!counts[key]) counts[key] = { emoji: item.emoji, count: 0 };
-      counts[key].count++;
+      if (!counts[item.name]) counts[item.name] = { emoji: item.emoji, count: 0 };
+      counts[item.name].count++;
     });
     el.innerHTML = Object.entries(counts).map(([name, val]) =>
       '<div class="inv-item" draggable="true" data-invname="' + name + '" ondragstart="invDragStart(event,\'' + name + '\')">' +
       '<span class="inv-emoji">' + val.emoji + '</span>' +
-      '<span>' + (val.count > 1 ? val.count + 'x ' : '') + name + '</span>' +
-      '</div>'
+      '<span>' + (val.count > 1 ? val.count + 'x ' : '') + name + '</span></div>'
     ).join('');
   }
 
-  function addToInventory(emoji, name, price, source, id) {
-    inventory.push({ id: id || (name + Date.now()), emoji, name, price: price || 0, source: source || '' });
+  function addToInventory(emoji, name, price, source) {
+    inventory.push({ id: name + Date.now() + Math.random(), emoji, name, price: price || 0, source: source || '' });
     updateInventory();
   }
 
@@ -404,7 +522,19 @@
     updateInventory();
   }
 
-  // ── FEEDBACK ──
+  function markDone(shop) {
+    document.getElementById('shop-' + shop).classList.add('done');
+    const dot = document.getElementById('dot-' + shop);
+    if (dot) dot.classList.add('done');
+  }
+
+  function toggleHint() {
+    const pop = document.getElementById('hint-popup');
+    if (pop.style.display === 'block') { pop.style.display = 'none'; return; }
+    pop.textContent = hints[activeScreen] || 'Keep exploring!';
+    pop.style.display = 'block';
+  }
+
   function showFeedback(emoji, title, msg, next) {
     document.getElementById('fb-emoji').textContent = emoji;
     document.getElementById('fb-title').textContent = title;
@@ -419,14 +549,14 @@
     walking = true;
     const targetX = shopX[shop];
     const sq = document.getElementById('squirrel');
-    sq.style.transform = targetX < squirrelX ? 'scaleX(-1)' : 'scaleX(1)';
+    if (targetX < squirrelX) sq.classList.add('flip'); else sq.classList.remove('flip');
     sq.style.left = targetX + 'px';
     squirrelX = targetX;
-    setTimeout(() => { walking = false; openShop(shop); }, 700);
+    setTimeout(() => { walking = false; openShop(shop); }, 750);
   }
 
   function openShop(shop) {
-    if (shop === 'bakery')    { resetLetters(); showScreen('bakery'); }
+    if (shop === 'bakery')    { if (!cakeBought) resetLetters(); showScreen('bakery'); }
     if (shop === 'party')     { renderPartyStore(); showScreen('party'); }
     if (shop === 'grocery')   { renderGroceryStore(); showScreen('grocery'); }
     if (shop === 'pizza')     { setupPizza(); showScreen('pizza'); }
@@ -447,23 +577,21 @@
   // ── PAY ──
   function payShop(shop) {
     if (shop === 'party') {
-      if (partyCart.length === 0) { alert('Your cart is empty!'); return; }
+      if (partyCart.length === 0) { setError('party-error', 'Your cart is empty!'); return; }
       const total = partyCart.reduce((s, c) => s + c.price, 0);
-      wallet -= total;
-      updateWallet();
-      partyCart.forEach(item => addToInventory(item.emoji, item.name, item.price, 'party', item.id));
+      wallet -= total; updateWallet();
+      partyCart.forEach(item => addToInventory(item.emoji, item.name, item.price, 'party'));
       partyCart = [];
-      document.getElementById('shop-party').classList.add('done');
+      markDone('party');
       showFeedback('🎈', 'Decorations bought!', 'Your decorations are in your bag! <strong>−' + total + ' 🪙</strong>', 'map');
     }
     if (shop === 'grocery') {
-      if (groceryCart.length === 0) { alert('Your cart is empty!'); return; }
+      if (groceryCart.length === 0) { setError('grocery-error', 'Your cart is empty!'); return; }
       const total = groceryCart.reduce((s, c) => s + c.price, 0);
-      wallet -= total;
-      updateWallet();
-      groceryCart.forEach(item => addToInventory(item.emoji, item.name, item.price, 'grocery', item.id));
+      wallet -= total; updateWallet();
+      groceryCart.forEach(item => addToInventory(item.emoji, item.name, item.price, 'grocery'));
       groceryCart = [];
-      document.getElementById('shop-grocery').classList.add('done');
+      markDone('grocery');
       showFeedback('🛒', 'Snacks bought!', 'Your snacks are in your bag! <strong>−' + total + ' 🪙</strong>', 'map');
     }
   }
@@ -477,13 +605,13 @@
       const b = document.getElementById('box-' + i);
       b.textContent = ''; b.className = 'letter-box' + (i === 0 ? ' active' : '');
     }
+    document.getElementById('bakery-error').textContent = '';
   }
 
   function updateBoxes() {
     for (let i = 0; i < 4; i++) {
       const b = document.getElementById('box-' + i);
-      b.textContent = lTyped[i];
-      b.className = 'letter-box';
+      b.textContent = lTyped[i]; b.className = 'letter-box';
       if (lTyped[i]) b.classList.add('filled');
       if (i === lCurrent && lCurrent < 4) b.classList.add('active');
     }
@@ -499,26 +627,26 @@
     setTimeout(() => {
       if (correct) {
         if (wallet < 30) {
-          showFeedback('😬', 'Not enough coins!', 'A cake costs <strong>30 🪙</strong> but you only have <strong>' + wallet + ' 🪙</strong>. Go earn more coins first!', 'map');
+          showFeedback('😬', 'Not enough coins!', 'A cake costs <strong>30 🪙</strong> but you only have <strong>' + wallet + ' 🪙</strong>. Try earning more coins first!', 'map');
           return;
         }
         wallet -= 30; updateWallet();
+        cakeBought = true;
         addToInventory('🎂', 'Cake', 30, 'bakery');
-        document.getElementById('shop-bakery').classList.add('done');
-        showFeedback('🎂', 'Here\'s the cake you ordered!', 'A beautiful unicorn cake 🦄🎂 is now in your bag! <strong>−30 🪙</strong>', 'map');
+        markDone('bakery');
+        showFeedback('🎂', "Here's your cake!", 'A beautiful unicorn cake 🦄🎂 is now in your bag! <strong>−30 🪙</strong>', 'map');
       } else {
-        showFeedback('😅', 'Almost!', 'That didn\'t spell <strong>CAKE</strong>. Try again! 💪', 'bakery');
+        showFeedback('😅', 'Almost!', 'That didn\'t spell <strong>CAKE</strong>. Look at the letters — which ones were wrong? 💪', 'bakery');
       }
     }, 600);
   }
 
-  // ── DRAG & DROP (shop items) ──
+  // ── DRAG & DROP ──
   function cartDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
   function cartDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
 
   function cartDrop(e, shop) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
+    e.preventDefault(); e.currentTarget.classList.remove('drag-over');
     if (dragSource === 'shop' && dragItemId) {
       if (shop === 'party')   addToPartyCart(dragItemId);
       if (shop === 'grocery') addToGroceryCart(dragItemId);
@@ -526,26 +654,19 @@
     dragItemId = null; dragSource = null;
   }
 
-  // ── RETURNS (party store only) ──
-  function invDragStart(e, name) {
-    dragSource = 'inventory';
-    dragItemId = name;
-  }
+  function invDragStart(e, name) { dragSource = 'inventory'; dragItemId = name; }
 
   function returnsDrop(e) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
+    e.preventDefault(); e.currentTarget.classList.remove('drag-over');
     if (dragSource !== 'inventory' || !dragItemId) return;
     const item = inventory.find(i => i.name === dragItemId && i.source === 'party');
-    if (!item) { alert('You can only return items bought at the Party Store!'); return; }
-    wallet += item.price;
-    updateWallet();
+    if (!item) { setError('party-error', 'You can only return Party Store items!'); return; }
+    wallet += item.price; updateWallet();
     removeFromInventoryByName(dragItemId);
-    showFeedback('↩️', 'Item returned!', '<strong>' + dragItemId + '</strong> returned. <strong>+' + item.price + ' 🪙</strong> added back to your wallet.', 'party');
+    showFeedback('↩️', 'Item returned!', '<strong>' + dragItemId + '</strong> returned. <strong>+' + item.price + ' 🪙</strong> back in your wallet.', 'party');
     dragItemId = null; dragSource = null;
   }
 
-  // touch drag
   function setupTouchDrag(el, itemId, source) {
     el.addEventListener('touchstart', () => { dragItemId = itemId; dragSource = source; }, { passive: true });
     el.addEventListener('touchend', (e) => {
@@ -559,14 +680,12 @@
         if (shop === 'grocery') addToGroceryCart(itemId);
       }
       if (retEl && dragSource === 'inventory') {
-        const fakeEvent = { preventDefault: ()=>{}, currentTarget: retEl };
-        retEl.classList.remove('drag-over');
         const item = inventory.find(i => i.name === itemId && i.source === 'party');
         if (item) {
           wallet += item.price; updateWallet();
           removeFromInventoryByName(itemId);
-          showFeedback('↩️', 'Item returned!', '<strong>' + itemId + '</strong> returned. <strong>+' + item.price + ' 🪙</strong> added back.', 'party');
-        } else { alert('You can only return items bought at the Party Store!'); }
+          showFeedback('↩️', 'Item returned!', '<strong>' + itemId + '</strong> returned. <strong>+' + item.price + ' 🪙</strong> back.', 'party');
+        } else { setError('party-error', 'You can only return Party Store items!'); }
       }
       dragItemId = null; dragSource = null;
     });
@@ -577,7 +696,9 @@
     const grid = document.getElementById('party-items-grid');
     grid.innerHTML = partyItems.map(item => {
       const inCart = partyCart.find(c => c.id === item.id);
-      return '<div class="shop-item' + (inCart ? ' in-cart' : '') + '" id="si-' + item.id + '" draggable="true" ondragstart="dragSource=\'shop\';dragItemId=\'' + item.id + '\'">' +
+      const alreadyOwned = inventory.find(i => i.name === item.name && i.source === 'party');
+      const disabled = inCart || alreadyOwned;
+      return '<div class="shop-item' + (disabled ? ' in-cart' : '') + '" id="si-' + item.id + '" draggable="' + (!disabled) + '" ondragstart="dragSource=\'shop\';dragItemId=\'' + item.id + '\'">' +
         '<div class="item-emoji">' + item.emoji + '</div>' +
         '<div class="item-name">' + item.name + '</div>' +
         '<div class="item-price">' + item.price + ' 🪙</div></div>';
@@ -586,10 +707,7 @@
       const el = document.getElementById('si-' + item.id);
       if (el) setupTouchDrag(el, item.id, 'shop');
     });
-    // make inventory items draggable for returns
-    document.querySelectorAll('.inv-item').forEach(el => {
-      setupTouchDrag(el, el.dataset.invname, 'inventory');
-    });
+    document.querySelectorAll('.inv-item').forEach(el => setupTouchDrag(el, el.dataset.invname, 'inventory'));
     renderPartyCartUI();
   }
 
@@ -598,9 +716,8 @@
     const item = partyItems.find(i => i.id === id);
     if (!item) return;
     const total = partyCart.reduce((s, c) => s + c.price, 0);
-    if (total + item.price > wallet) { alert('Not enough coins! 🪙'); return; }
-    partyCart.push(item);
-    renderPartyStore();
+    if (total + item.price > wallet) { setError('party-error', 'Not enough coins! 🪙'); return; }
+    partyCart.push(item); renderPartyStore();
   }
 
   function renderPartyCartUI() {
@@ -612,17 +729,14 @@
     document.getElementById('party-cart-total').textContent = 'Total: ' + partyCart.reduce((s,c)=>s+c.price,0) + ' 🪙';
   }
 
-  function removeFromPartyCart(id) {
-    partyCart = partyCart.filter(c => c.id !== id);
-    renderPartyStore();
-  }
+  function removeFromPartyCart(id) { partyCart = partyCart.filter(c => c.id !== id); renderPartyStore(); }
 
   // ── GROCERY ──
   function renderGroceryStore() {
     const grid = document.getElementById('grocery-items-grid');
     grid.innerHTML = groceryItems.map(item => {
       const inCart = groceryCart.find(c => c.id === item.id);
-      return '<div class="shop-item' + (inCart ? ' in-cart' : '') + '" id="gi-' + item.id + '" draggable="true" ondragstart="dragSource=\'shop\';dragItemId=\'' + item.id + '\'">' +
+      return '<div class="shop-item' + (inCart ? ' in-cart' : '') + '" id="gi-' + item.id + '" draggable="' + (!inCart) + '" ondragstart="dragSource=\'shop\';dragItemId=\'' + item.id + '\'">' +
         '<div class="item-emoji">' + item.emoji + '</div>' +
         '<div class="item-name">' + item.name + '</div>' +
         '<div class="item-price">' + item.price + ' 🪙</div></div>';
@@ -639,9 +753,8 @@
     const item = groceryItems.find(i => i.id === id);
     if (!item) return;
     const total = groceryCart.reduce((s, c) => s + c.price, 0);
-    if (total + item.price > wallet) { alert('Not enough coins! 🪙'); return; }
-    groceryCart.push(item);
-    renderGroceryStore();
+    if (total + item.price > wallet) { setError('grocery-error', 'Not enough coins! 🪙'); return; }
+    groceryCart.push(item); renderGroceryStore();
   }
 
   function renderGroceryCartUI() {
@@ -653,75 +766,110 @@
     document.getElementById('grocery-cart-total').textContent = 'Total: ' + groceryCart.reduce((s,c)=>s+c.price,0) + ' 🪙';
   }
 
-  function removeFromGroceryCart(id) {
-    groceryCart = groceryCart.filter(c => c.id !== id);
-    renderGroceryStore();
-  }
+  function removeFromGroceryCart(id) { groceryCart = groceryCart.filter(c => c.id !== id); renderGroceryStore(); }
 
   // ── PIZZA ──
   function setupPizza() {
     pizzaCount = 0;
     document.getElementById('pizza-count').textContent = '0';
+    document.getElementById('pizza-visual').innerHTML = '';
+    document.getElementById('pizza-error').textContent = '';
     document.getElementById('pizza-question').innerHTML =
-      'Mia invited <strong>' + pizzaGuests + ' friends</strong>.<br>Each pizza feeds <strong>4 people</strong>.<br>How many pizzas do you need?';
+      'Mia invited <strong>' + pizzaGuests + ' friends</strong>.<br>Each pizza has <strong>4 slices</strong>. How many do you need?';
+  }
+
+  function updatePizzaVisual() {
+    const vis = document.getElementById('pizza-visual');
+    vis.innerHTML = '';
+    for (let i = 0; i < pizzaCount; i++) {
+      const d = document.createElement('div');
+      d.className = 'pizza-slice'; d.textContent = '🍕';
+      vis.appendChild(d);
+    }
   }
 
   function changeCount(delta) {
-    pizzaCount = Math.max(0, pizzaCount + delta);
+    const newCount = pizzaCount + delta;
+    if (newCount < 0) return;
+    if (newCount * 8 > wallet) { setError('pizza-error', 'Not enough coins for that many! 🪙'); return; }
+    pizzaCount = newCount;
     document.getElementById('pizza-count').textContent = pizzaCount;
+    updatePizzaVisual();
   }
 
   function confirmPizza() {
-    if (pizzaCount === 0) { alert('Pick at least 1 pizza!'); return; }
+    if (pizzaCount === 0) { setError('pizza-error', 'Pick at least 1 pizza!'); return; }
     const cost = pizzaCount * 8;
-    if (cost > wallet) { alert('Not enough coins! 🪙'); return; }
     wallet -= cost; updateWallet();
     for (let i = 0; i < pizzaCount; i++) addToInventory('🍕', 'Pizza', 8, 'pizza');
     const totalPizzas = inventory.filter(i => i.name === 'Pizza').length;
-    document.getElementById('shop-pizza').classList.add('done');
-    // totalPizzas * 4 slices, guests = 9
     const totalSlices = totalPizzas * 4;
-    const slicesPerGuest = Math.floor(totalSlices / pizzaGuests);
-    let feedbackEmoji, feedbackTitle, feedbackMsg;
-    if (totalPizzas < pizzaCorrect) {
-      // not enough: fewer than 1 slice each
-      feedbackEmoji = '😬';
-      feedbackTitle = 'Not enough pizza!';
-      feedbackMsg = 'You have <strong>' + totalPizzas + ' pizza' + (totalPizzas > 1 ? 's' : '') + '</strong> total (' + totalSlices + ' slices) for <strong>' + pizzaGuests + ' guests</strong>. That\'s not enough for everyone to eat! You need at least <strong>' + pizzaCorrect + '</strong>.';
-    } else if (slicesPerGuest >= 2) {
-      // enough for 2+ slices each — perfect or generous
-      feedbackEmoji = totalPizzas === pizzaCorrect ? '🍕' : '🎉';
-      feedbackTitle = totalPizzas === pizzaCorrect ? 'Perfect order!' : 'Very generous!';
-      feedbackMsg = 'You have <strong>' + totalPizzas + ' pizza' + (totalPizzas > 1 ? 's' : '') + '</strong> total (' + totalSlices + ' slices) for <strong>' + pizzaGuests + ' guests</strong>. That\'s <strong>' + slicesPerGuest + ' slices each</strong> — everyone is happy! 🎉';
+    const slicesEach = Math.floor(totalSlices / pizzaGuests);
+    markDone('pizza');
+    let fbEmoji, fbTitle, fbMsg;
+    if (totalSlices < pizzaGuests) {
+      fbEmoji = '😬'; fbTitle = 'Not enough pizza!';
+      fbMsg = 'You have <strong>' + totalPizzas + ' pizza' + (totalPizzas>1?'s':'') + '</strong> (' + totalSlices + ' slices) for <strong>' + pizzaGuests + ' guests</strong>. That\'s less than 1 slice each — someone will go hungry! 😢 You can order more.';
+    } else if (slicesEach < 2) {
+      fbEmoji = '🤔'; fbTitle = 'Just barely enough...';
+      fbMsg = 'You have <strong>' + totalPizzas + ' pizza' + (totalPizzas>1?'s':'') + '</strong> (' + totalSlices + ' slices) for <strong>' + pizzaGuests + ' guests</strong>. Everyone gets 1 slice, but it\'s a little tight. Could you order more next time?';
+    } else if (slicesEach >= 2 && totalPizzas <= Math.ceil(pizzaGuests * 2 / 4)) {
+      fbEmoji = '🍕'; fbTitle = 'Perfect!';
+      fbMsg = 'You have <strong>' + totalPizzas + ' pizza' + (totalPizzas>1?'s':'') + '</strong> (' + totalSlices + ' slices) — that\'s <strong>' + slicesEach + ' slices each</strong> for ' + pizzaGuests + ' guests. Everyone is happy! 🎉';
     } else {
-      // enough for 1 slice each but not 2
-      feedbackEmoji = '🤔';
-      feedbackTitle = 'Just barely enough...';
-      feedbackMsg = 'You have <strong>' + totalPizzas + ' pizza' + (totalPizzas > 1 ? 's' : '') + '</strong> total (' + totalSlices + ' slices) for <strong>' + pizzaGuests + ' guests</strong>. Everyone gets 1 slice, but it\'s a little tight! Could you get more next time?';
+      fbEmoji = '😅'; fbTitle = 'That\'s a lot of pizza!';
+      fbMsg = 'You have <strong>' + totalPizzas + ' pizza' + (totalPizzas>1?'s':'') + '</strong> (' + totalSlices + ' slices) for <strong>' + pizzaGuests + ' guests</strong>. That\'s <strong>' + slicesEach + ' slices each</strong> — plenty, but you spent a lot of coins! 🪙';
     }
-    feedbackMsg += ' <strong>−' + cost + ' 🪙</strong>';
-    showFeedback(feedbackEmoji, feedbackTitle, feedbackMsg, 'map');
+    fbMsg += ' <strong>−' + cost + ' 🪙</strong>';
+    showFeedback(fbEmoji, fbTitle, fbMsg, 'map');
   }
 
-  // ── PARTY ROOM ──
+  // ── PARTY RESULT ──
   function startParty() {
-    const score = inventory.length;
-    let emoji, title, stars, msg;
-    if (score >= 5) {
+    const hasCake = inventory.some(i => i.name === 'Cake');
+    const unicornDecos = inventory.filter(i => i.source === 'party' && partyItems.find(p => p.id === (partyItems.find(p2 => p2.name === i.name) || {}).id)?.theme === 'unicorn');
+    const offThemeDecos = inventory.filter(i => i.source === 'party' && partyItems.find(p => p.name === i.name && p.theme !== 'unicorn'));
+    const totalPizzas = inventory.filter(i => i.name === 'Pizza').length;
+    const totalSlices = totalPizzas * 4;
+    const hasEnoughPizza = totalSlices >= pizzaGuests;
+    const hasSnacks = inventory.some(i => i.source === 'grocery');
+
+    let score = 0;
+    if (hasCake) score += 2;
+    if (unicornDecos.length > 0) score += 2;
+    if (hasEnoughPizza) score += 2;
+    if (hasSnacks) score += 1;
+    if (offThemeDecos.length > 0) score -= 1;
+
+    let emoji, title, stars, miaMsg;
+    if (score >= 6) {
       emoji = '🦄'; title = "Mia's dream party!"; stars = '⭐⭐⭐';
-      msg = 'You got everything! Mia is SO happy! 🎉🌸';
+      miaMsg = 'This is the BEST birthday ever! Everything is perfect! 🌸🎉';
+    } else if (score >= 4) {
+      emoji = '😊'; title = 'A really fun party!'; stars = '⭐⭐';
+      miaMsg = 'I had so much fun! A few things were missing but I still loved it! 💕';
     } else if (score >= 2) {
-      emoji = '😊'; title = 'Pretty good party!'; stars = '⭐⭐';
-      msg = 'Mia had a great time, but a few things were missing!';
+      emoji = '🙂'; title = 'A nice party!'; stars = '⭐';
+      miaMsg = 'Thanks for trying! Next time maybe we can get more things ready?';
     } else {
-      emoji = '😅'; title = 'The party needs more!'; stars = '⭐';
-      msg = 'Mia still had fun, but the party was a little empty. Try again!';
+      emoji = '😢'; title = 'The party needs more!'; stars = '';
+      miaMsg = 'Oh no... the party is missing a lot of things. Can we try again?';
     }
+
+    // detail breakdown
+    let detail = '';
+    detail += '<span class="' + (hasCake?'ok':'bad') + '">' + (hasCake?'✅':'❌') + ' Birthday cake</span><br>';
+    detail += '<span class="' + (unicornDecos.length>0?'ok':'bad') + '">' + (unicornDecos.length>0?'✅':'❌') + ' Unicorn decorations' + (offThemeDecos.length>0?' <span style="color:#d97706">(+ some off-theme items!)</span>':'') + '</span><br>';
+    detail += '<span class="' + (hasEnoughPizza?'ok':'bad') + '">' + (hasEnoughPizza?'✅':'❌') + ' Enough pizza (' + totalSlices + ' slices for ' + pizzaGuests + ' guests)</span><br>';
+    detail += '<span class="' + (hasSnacks?'ok':'bad') + '">' + (hasSnacks?'✅':'❌') + ' Snacks</span><br>';
+    detail += '<br>Coins left: <strong>' + wallet + ' 🪙</strong>';
+
     document.getElementById('result-emoji').textContent = emoji;
     document.getElementById('result-title').textContent = title;
     document.getElementById('result-stars').textContent = stars;
-    document.getElementById('result-bubble').innerHTML = msg + '<br><br>Coins left: <strong>' + wallet + ' 🪙</strong>';
-    document.getElementById('result-items').innerHTML = inventory.map(i => '<div class="party-item">' + i.emoji + '</div>').join('');
+    document.getElementById('result-bubble').innerHTML = '"' + miaMsg + '"';
+    document.getElementById('result-items').innerHTML = inventory.map(i => '<span>' + i.emoji + '</span>').join('');
+    document.getElementById('result-detail').innerHTML = detail;
     showScreen('result');
   }
 
@@ -732,13 +880,14 @@
       showScreen('map'); return;
     }
     if (activeScreen === 'feedback' && e.key === 'Enter') {
-      if (afterFeedback === 'bakery') { resetLetters(); showScreen('bakery'); }
+      if (afterFeedback === 'bakery') { if (!cakeBought) resetLetters(); showScreen('bakery'); }
       else if (afterFeedback === 'party') { renderPartyStore(); showScreen('party'); }
       else showScreen(afterFeedback);
       return;
     }
     if (activeScreen === 'result' && e.key === 'Enter') { location.reload(); return; }
     if (activeScreen === 'bakery') {
+      if (cakeBought) return;
       if (e.key === 'Backspace') {
         if (lCurrent > 0) { lCurrent--; lTyped[lCurrent] = ''; updateBoxes(); } return;
       }
