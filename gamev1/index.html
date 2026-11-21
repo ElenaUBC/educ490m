@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ready, Set, Party! (trial build v2)</title>
+<style>
+:root{
+  --bg:#f4ecdf; --ink:#4a4036; --muted:#8a7d6e; --panel:#fffaf2; --line:#e2d5c2;
+  --grass:#c9dbb2; --road:#e6d3b1; --roadEdge:#d4bd96;
+  --green:#7fb069; --red:#d9776a; --accent:#6fa3a8;
+  --player:#9b7bb8; --mia:#9a6b4f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Trebuchet MS",Verdana,sans-serif;color:var(--ink);background:var(--bg);overflow:hidden;user-select:none}
+button{font-family:inherit;cursor:pointer}
+#app{display:flex;height:100vh}
+#stage{position:relative;flex:1;overflow:hidden}
+#sidebar{width:112px;background:#efe3cf;border-left:3px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 6px;gap:12px}
+.sb-btn{width:84px;border:none;background:var(--panel);border-radius:16px;padding:8px 4px;box-shadow:0 2px 0 var(--line);font-size:13px;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px}
+.sb-btn svg{width:38px;height:38px}
+.sb-btn.on{outline:3px solid var(--accent)}
+#wallet{font-weight:bold;font-size:15px}
+.sb-spacer{flex:1}
+.screen{position:absolute;inset:0;display:none}
+.screen.active{display:block}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:22px}
+h1.title{font-size:56px;margin:0;color:#c07a5a;text-shadow:3px 3px 0 #f1d7b8}
+.big-btn{font-size:26px;padding:14px 46px;border:none;border-radius:40px;background:var(--green);color:white;box-shadow:0 4px 0 #5e8c4d}
+.big-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #5e8c4d}
+.name-line{font-size:40px;letter-spacing:4px;min-width:340px;border-bottom:4px solid var(--ink);text-align:left;padding:4px 8px;min-height:62px}
+.cursor{display:inline-block;width:3px;height:44px;background:var(--ink);vertical-align:middle;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hint-text{color:var(--muted);font-size:18px}
+/* speech bubble */
+.bubble{position:absolute;background:white;border:3px solid var(--ink);border-radius:20px;padding:12px 16px;font-size:20px;max-width:420px;line-height:1.35;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.bubble:after{content:"";position:absolute;bottom:-14px;left:40px;border:12px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.navbtn{position:absolute;bottom:22px;font-size:22px;padding:10px 26px;border:none;border-radius:30px;background:var(--accent);color:#fff;box-shadow:0 3px 0 #4f8086}
+.navbtn.left{left:22px}.navbtn.right{right:22px}
+.navbtn:disabled{opacity:.35;cursor:default}
+/* map */
+#s-map{background:#c9dbb2}
+#mapSvg{width:100%;height:100%;display:block}
+.station{cursor:pointer;transition:transform .2s;transform-box:fill-box;transform-origin:center bottom}
+.station:hover{transform:scale(1.12)}
+#hoverLabel{position:absolute;pointer-events:none;background:white;border:2px solid var(--ink);border-radius:14px;padding:6px 12px;font-size:20px;display:none;white-space:nowrap}
+#mapAvatar{position:absolute;transition:left .6s ease,top .6s ease;pointer-events:none}
+/* station overlay */
+#overlay{position:absolute;inset:0;background:rgba(74,64,54,.25);display:none}
+#overlay.active{display:block}
+#frame{position:absolute;left:5%;top:5%;width:90%;height:90%;background:var(--panel);border:4px solid var(--line);border-radius:24px;overflow:hidden}
+#frameTitle{position:absolute;left:24px;top:14px;font-size:24px;font-weight:bold}
+#exitBtn{position:absolute;right:14px;top:12px;z-index:30;font-size:18px;padding:8px 18px;border:none;border-radius:20px;background:var(--red);color:white;box-shadow:0 3px 0 #a9584d}
+#frameBody{position:absolute;inset:60px 16px 16px 16px}
+.modal{position:absolute;inset:0;background:rgba(74,64,54,.35);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal .box{background:white;border-radius:20px;padding:24px 30px;text-align:center;font-size:22px;border:3px solid var(--ink)}
+.modal .box button{font-size:20px;margin:14px 10px 0;padding:8px 26px;border:none;border-radius:20px;color:white}
+.yes{background:var(--red)}.no{background:var(--green)}
+#toast{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:white;border:4px solid var(--green);border-radius:24px;padding:22px 36px;font-size:28px;z-index:80;display:none;text-align:center}
+/* panels */
+#panel{position:absolute;right:10px;top:10px;bottom:10px;width:min(420px,60%);background:white;border:3px solid var(--line);border-radius:20px;z-index:60;display:none;padding:18px;overflow:auto}
+#panel h2{margin:0 0 10px}
+.inv-group{margin-bottom:12px}.inv-group h3{margin:4px 0;font-size:17px;color:var(--muted)}
+.inv-item{display:inline-block;background:var(--bg);border-radius:12px;padding:4px 10px;margin:3px;font-size:16px}
+/* generic */
+.row{display:flex;gap:14px;align-items:flex-start}
+.card{background:white;border:3px solid var(--line);border-radius:18px;padding:12px}
+.btn{font-size:18px;padding:8px 20px;border:none;border-radius:18px;background:var(--accent);color:white;box-shadow:0 3px 0 #4f8086}
+.btn.green{background:var(--green);box-shadow:0 3px 0 #5e8c4d}
+.drag{touch-action:none;cursor:grab}
+.ghost{position:fixed;pointer-events:none;z-index:999;opacity:.85}
+.npc{position:absolute}
+.coin{position:fixed;width:26px;height:26px;border-radius:50%;background:#e2b84f;border:3px solid #b8902f;z-index:999;transition:left .7s ease-in,top .7s ease-in,opacity .7s}
+.confetti{position:absolute;width:10px;height:14px;top:-20px;z-index:70;animation:fall 2.2s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+input.answer{font-size:28px;width:110px;text-align:center;border:3px solid var(--ink);border-radius:12px;padding:4px}
+.placeholder-note{position:absolute;left:16px;bottom:8px;font-size:13px;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <!-- Title -->
+    <div id="s-title" class="screen active"><div class="center">
+      <h1 class="title">Ready, Set, Party!</h1>
+      <button class="big-btn" id="playBtn">Play</button>
+    </div></div>
+    <!-- Name -->
+    <div id="s-name" class="screen"><div class="center">
+      <div style="font-size:34px">Your name</div>
+      <div class="name-line"><span id="nameText"></span><span class="cursor"></span></div>
+      <div class="hint-text">Type your name and press Enter</div>
+    </div></div>
+    <!-- Mia's house scene -->
+    <div id="s-scene" class="screen">
+      <svg id="sceneBg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"></svg>
+      <div id="scenePlayer" class="npc" style="transition:left 2s ease"></div>
+      <div id="sceneMia" class="npc"></div>
+      <div id="sceneBubble" class="bubble" style="display:none"></div>
+      <button class="navbtn left" id="backBtn">Back</button>
+      <button class="navbtn right" id="nextBtn">Next</button>
+    </div>
+    <!-- Map -->
+    <div id="s-map" class="screen">
+      <svg id="mapSvg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="mapAvatar"></div>
+      <div id="hoverLabel"></div>
+    </div>
+    <!-- Party -->
+    <div id="s-party" class="screen"></div>
+    <!-- Station overlay -->
+    <div id="overlay"><div id="frame">
+      <div id="frameTitle"></div>
+      <button id="exitBtn">Exit</button>
+      <div id="frameBody"></div>
+    </div></div>
+    <div id="toast"></div>
+    <div id="panel"></div>
+  </div>
+  <div id="sidebar">
+    <div class="sb-btn" id="walletBox" title="Wallet">
+      <svg viewBox="0 0 40 40"><rect x="4" y="11" width="32" height="22" rx="5" fill="#c99b6d"/><rect x="4" y="11" width="32" height="7" rx="3" fill="#b5875c"/><circle cx="29" cy="24" r="3" fill="#f3e2c0"/></svg>
+      <span id="wallet">$100.00</span>
+    </div>
+    <button class="sb-btn" id="checklistBtn" title="Checklist">
+      <svg viewBox="0 0 40 40"><rect x="7" y="5" width="26" height="31" rx="4" fill="#fff" stroke="#8a7d6e" stroke-width="2"/><path d="M11 13l3 3 5-6M11 22l3 3 5-6M11 31l3 3" stroke="#7fb069" stroke-width="2.5" fill="none"/><path d="M22 14h7M22 23h7M22 32h7" stroke="#8a7d6e" stroke-width="2"/></svg>
+      Checklist</button>
+    <button class="sb-btn" id="inventoryBtn" title="Inventory">
+      <svg viewBox="0 0 40 40"><path d="M6 16h28l-3 18H9z" fill="#d6a874"/><path d="M12 16c0-8 16-8 16 0" stroke="#a87d50" stroke-width="3" fill="none"/><path d="M10 22h20M11 28h18" stroke="#b98b5b" stroke-width="2"/></svg>
+      Inventory</button>
+    <div class="sb-spacer"></div>
+    <button class="sb-btn" id="timerBtn" title="Timer">
+      <svg viewBox="0 0 40 40"><circle cx="20" cy="22" r="13" fill="#fff" stroke="#8a7d6e" stroke-width="3"/><path d="M20 22V14M20 22l6 4" stroke="#4a4036" stroke-width="3"/><rect x="16" y="3" width="8" height="5" rx="2" fill="#8a7d6e"/></svg>
+      <span id="timerText">Timer off</span></button>
+    <button class="sb-btn on" id="soundBtn" title="Sound">
+      <svg viewBox="0 0 40 40"><path d="M7 15h7l9-7v24l-9-7H7z" fill="#8a7d6e"/><path id="soundWaves" d="M27 13c4 4 4 10 0 14M31 9c7 7 7 15 0 22" stroke="#6fa3a8" stroke-width="3" fill="none"/></svg>
+      <span id="soundText">Sound on</span></button>
+  </div>
+</div>
+
+<script>
+/* ======================================================================
+   Ready, Set, Party! — first trial build (v2)
+   Built from the group's Working Agreement and Decision Log.
+   Items marked PLACEHOLDER are not yet decided by the group/lead creator.
+   ====================================================================== */
+const $ = s => document.querySelector(s);
+const PALETTE = {player:'#9b7bb8', mia:'#9a6b4f',
+  guests:{black:'#4b4b4b',coral:'#f2a08c',green:'#7fb069',orange:'#e39b5b',pink:'#e5a3b8',red:'#d9776a',white:'#f7f4ee',yellow:'#ead26a'},
+  shop:{post:'#3e5577',bakery:'#9a9a9a',supplies:'#7f8450',pizza:'#e9826f',gift:'#9fd8bc'}};
+const GUESTS = ['green','coral','red','pink','black','yellow','white','orange'];
+
+const state = {
+  name:'', walletCents:10000, soundOn:true, timerOn:false, timeLeft:600, timerId:null,
+  inventory:{'From Mia':['Guest list']},
+  done:{}, lastStation:'mia', pizzaSlices:0, partyStarted:false,
+  decorations:null, returnedDecor:false
+};
+
+/* ---------- sound & speech ---------- */
+let audioCtx=null;
+function click(){ if(!state.soundOn) return; try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=660; g.gain.value=.08;
+  o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.12); o.stop(audioCtx.currentTime+.13);}catch(e){} }
+let chosenVoice=null;
+function pickVoice(){ if(!('speechSynthesis' in window)) return; const vs=speechSynthesis.getVoices(); if(!vs.length) return;
+  const en=vs.filter(v=>/^en/i.test(v.lang)); const pool=en.length?en:vs;
+  const prefs=[/natural/i,/google us english/i,/samantha/i,/google uk english female/i,/aria|jenny/i,/karen|moira|tessa|serena|ava|allison/i,/google/i];
+  for(const p of prefs){ const v=pool.find(v=>p.test(v.name)); if(v){ chosenVoice=v; return; } }
+  chosenVoice=pool.find(v=>v.default)||pool[0]; }
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function speak(text, opts={}){ return new Promise(res=>{
+  if(!state.soundOn || !('speechSynthesis' in window)){ setTimeout(res, opts.silentMs||700); return; }
+  const u=new SpeechSynthesisUtterance(text); if(chosenVoice){ u.voice=chosenVoice; u.lang=chosenVoice.lang; } u.rate=opts.rate||1; u.pitch=1;
+  let done=false; const fin=()=>{ if(!done){done=true;res();} };
+  u.onend=fin; u.onerror=fin; setTimeout(fin, 1500+text.length*120);
+  if(!opts.queue) speechSynthesis.cancel(); speechSynthesis.speak(u); }); }
+
+/* ---------- drawing ---------- */
+function smiley(color,size=90,extra=''){
+  const stroke = color==='#f7f4ee' ? '#bdb3a5' : 'rgba(0,0,0,.18)';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" ${extra}>
+   <circle cx="50" cy="50" r="44" fill="${color}" stroke="${stroke}" stroke-width="4"/>
+   <circle cx="36" cy="42" r="6" fill="#3b322a"/><circle cx="64" cy="42" r="6" fill="#3b322a"/>
+   <circle cx="34" cy="40" r="2" fill="#fff"/><circle cx="62" cy="40" r="2" fill="#fff"/>
+   <path d="M33 60 Q50 76 67 60" stroke="#3b322a" stroke-width="5" fill="none" stroke-linecap="round"/>
+   <circle cx="26" cy="58" r="6" fill="#f2a7a0" opacity=".55"/><circle cx="74" cy="58" r="6" fill="#f2a7a0" opacity=".55"/></svg>`; }
+function money(c){ return '$'+(c/100).toFixed(2); }
+function updateWallet(){ $('#wallet').textContent=money(state.walletCents); }
+function addInv(group,item){ (state.inventory[group]=state.inventory[group]||[]).push(item); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+function toast(text,ms=2200){ return new Promise(r=>{ const t=$('#toast'); t.textContent=text; t.style.display='block'; setTimeout(()=>{t.style.display='none';r();},ms); }); }
+function confetti(container){ const cols=['#e5a3b8','#6fa3a8','#ead26a','#7fb069','#e39b5b','#9b7bb8'];
+  for(let i=0;i<90;i++){ const d=document.createElement('div'); d.className='confetti';
+    d.style.left=Math.random()*100+'%'; d.style.background=cols[i%cols.length]; d.style.animationDelay=(Math.random()*0.8)+'s';
+    container.appendChild(d); setTimeout(()=>d.remove(),3200);} }
+function payWithCoins(cents, targetEl){ return new Promise(res=>{
+  const from=$('#walletBox').getBoundingClientRect(); const to=targetEl.getBoundingClientRect();
+  const n=Math.min(8,Math.max(3,Math.round(cents/300)));
+  for(let i=0;i<n;i++){ const c=document.createElement('div'); c.className='coin';
+    c.style.left=(from.left+20)+'px'; c.style.top=(from.top+20)+'px'; document.body.appendChild(c);
+    setTimeout(()=>{ c.style.left=(to.left+to.width/2-13+(Math.random()*30-15))+'px'; c.style.top=(to.top+to.height/2-13)+'px'; c.style.opacity='.2'; }, 60+i*110);
+    setTimeout(()=>c.remove(), 1000+i*110); }
+  state.walletCents-=cents; setTimeout(()=>{updateWallet();res();}, 900+n*110); }); }
+
+/* ---------- generic drag (mouse + touch) ---------- */
+function makeDraggable(el, onDrop){
+  el.classList.add('drag');
+  el.addEventListener('pointerdown', e=>{
+    e.preventDefault(); click();
+    const r=el.getBoundingClientRect(); const g=el.cloneNode(true); g.classList.add('ghost');
+    g.style.width=r.width+'px'; g.style.left=r.left+'px'; g.style.top=r.top+'px'; document.body.appendChild(g);
+    const dx=e.clientX-r.left, dy=e.clientY-r.top;
+    const move=ev=>{ g.style.left=(ev.clientX-dx)+'px'; g.style.top=(ev.clientY-dy)+'px'; };
+    const up=ev=>{ window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); g.remove();
+      const t=document.elementFromPoint(ev.clientX,ev.clientY); const drop=t&&t.closest('[data-drop]'); onDrop(drop, ev); };
+    window.addEventListener('pointermove',move); window.addEventListener('pointerup',up);
+  });
+}
+
+/* ---------- sidebar ---------- */
+function togglePanel(kind){
+  const p=$('#panel');
+  if(p.dataset.kind===kind && p.style.display==='block'){ p.style.display='none'; p.dataset.kind=''; return; }
+  p.dataset.kind=kind; p.style.display='block';
+  if(kind==='checklist'){ p.innerHTML='<h2>Checklist</h2><p class="hint-text">The checklist is blank for the first trial.</p>'; }
+  else { let h='<h2>Inventory</h2>'; const groups=Object.keys(state.inventory).filter(g=>state.inventory[g].length);
+    if(!groups.length) h+='<p class="hint-text">Nothing yet.</p>';
+    groups.forEach(g=>{ h+=`<div class="inv-group"><h3>${g}</h3>`+state.inventory[g].map(i=>`<span class="inv-item">${i}</span>`).join('')+'</div>'; });
+    p.innerHTML=h; }
+}
+$('#checklistBtn').onclick=()=>{click();togglePanel('checklist');};
+$('#inventoryBtn').onclick=()=>{click();togglePanel('inventory');};
+$('#soundBtn').onclick=()=>{ state.soundOn=!state.soundOn; $('#soundBtn').classList.toggle('on',state.soundOn);
+  $('#soundText').textContent=state.soundOn?'Sound on':'Sound off'; $('#soundWaves').style.display=state.soundOn?'':'none';
+  if(!state.soundOn && 'speechSynthesis' in window) speechSynthesis.cancel(); };
+$('#timerBtn').onclick=()=>{ click(); state.timerOn=!state.timerOn; $('#timerBtn').classList.toggle('on',state.timerOn);
+  if(state.timerOn){ state.timeLeft=600; renderTimer(); state.timerId=setInterval(tick,1000); }
+  else { clearInterval(state.timerId); $('#timerText').textContent='Timer off'; } };
+function renderTimer(){ const m=Math.floor(state.timeLeft/60), s=state.timeLeft%60; $('#timerText').textContent=m+':'+String(s).padStart(2,'0'); }
+function tick(){ state.timeLeft--; renderTimer(); if(state.timeLeft<=0){ clearInterval(state.timerId); closeStation(true); goParty(); } }
+
+/* ---------- title & name ---------- */
+$('#playBtn').onclick=()=>{ click(); show('#s-name'); speak('Your name'); };
+document.addEventListener('keydown',e=>{
+  if(!$('#s-name').classList.contains('active')) return;
+  if(e.key==='Enter'){ if(state.name.trim()){ startScene(true); } return; }
+  if(e.key==='Backspace'){ state.name=state.name.slice(0,-1); }
+  else if(e.key.length===1 && state.name.length<14){ state.name+=e.key; }
+  $('#nameText').textContent=state.name;
+});
+
+/* ---------- Mia's house scene ---------- */
+function sceneBg(){ return `<rect width="1000" height="600" fill="#f2e4cf"/><rect y="430" width="1000" height="170" fill="#dcc29c"/>
+  <rect x="80" y="120" width="210" height="160" rx="14" fill="#cfe3e8" stroke="#bda98a" stroke-width="8"/><path d="M185 120v160M80 200h210" stroke="#bda98a" stroke-width="6"/>
+  <rect x="640" y="230" width="260" height="200" rx="16" fill="#c98b6b"/><rect x="660" y="250" width="220" height="70" rx="12" fill="#d9a184"/>
+  <circle cx="500" cy="110" r="38" fill="#fffaf2" stroke="#bda98a" stroke-width="5"/><path d="M500 110V88M500 110l14 8" stroke="#8a7d6e" stroke-width="4"/>
+  <text x="500" y="560" font-size="26" text-anchor="middle" fill="#8a7d6e">Mia's house</text>`; }
+const dialogue = () => [
+  {who:'player', text:`Hi Mia, happy birthday, are you ready for the party?`},
+  {who:'mia', text:`Hi ${state.name}. I'm not ready yet. I need help. Can you help me?`},
+  {who:'player', text:`Yes, I will help you. What can I do?`},
+  {who:'mia', text:`Please deliver invitations to my friends, here is the list. Please buy decorations, cake and food for the party. I've always dreamt of a mermaid party. Here is $100, please bring back what you haven't spent. Thanks for your help.`}
+];
+let lineIdx=0;
+function startScene(first){
+  show('#s-scene'); $('#sceneBg').innerHTML=sceneBg();
+  $('#sceneMia').innerHTML=smiley(PALETTE.mia,150); Object.assign($('#sceneMia').style,{left:'62%',top:'52%'});
+  const p=$('#scenePlayer'); p.innerHTML=smiley(PALETTE.player,130); p.style.transition='none'; p.style.left='2%'; p.style.top='56%';
+  $('#sceneBubble').style.display='none'; lineIdx=0; $('#nextBtn').disabled=true; $('#backBtn').disabled=true;
+  requestAnimationFrame(()=>{ p.style.transition='left 2s ease'; p.style.left='38%'; });
+  setTimeout(()=>showLine(),2100);
+}
+function showLine(){
+  const L=dialogue()[lineIdx]; const b=$('#sceneBubble'); b.textContent=L.text; b.style.display='block';
+  if(L.who==='player'){ b.style.left='22%'; b.style.top='18%'; } else { b.style.left='48%'; b.style.top='12%'; }
+  $('#backBtn').disabled = lineIdx===0; $('#nextBtn').disabled=false;
+  speak(L.text);
+}
+$('#nextBtn').onclick=()=>{ click(); if(lineIdx<dialogue().length-1){ lineIdx++; showLine(); } else { if('speechSynthesis' in window) speechSynthesis.cancel(); enterMap(); } };
+$('#backBtn').onclick=()=>{ click(); if(lineIdx>0){ lineIdx--; showLine(); } };
+
+/* ---------- map ---------- */
+const STATIONS=[
+  {id:'mia', name:"Mia's house", icon:'🏠', x:95,  y:300, roof:'#c98b6b', wall:'#f0dcc2'},
+  {id:'post',name:'Post office', icon:'✉️', x:230, y:150, roof:'#6f8fb0', wall:'#e9e4d6'},
+  {id:'bakery',name:'Bakery', icon:'🥐', x:370, y:410, roof:'#d7a86e', wall:'#f6e6cf'},
+  {id:'supplies',name:'Party supplies', icon:'🎈', x:510, y:160, roof:'#b98fb8', wall:'#f3e3ee'},
+  {id:'pizza',name:'Pizzeria', icon:'🍕', x:650, y:410, roof:'#d9776a', wall:'#f7e2d6'},
+  {id:'gift',name:'Gift store', icon:'🎁', x:790, y:160, roof:'#7fb3a0', wall:'#e3f1ea'},
+  {id:'party',name:'Party room', icon:'🎉', x:915, y:330, roof:'#e0b54f', wall:'#fbf0d0'}
+];
+function drawMap(){
+  let s=`<rect width="1000" height="600" fill="#c9dbb2"/>`;
+  for(let i=0;i<26;i++){ const x=(i*137)%1000, y=(i*89)%600; s+=`<circle cx="${x}" cy="${y}" r="${10+(i%3)*4}" fill="#b4cc98" opacity=".7"/>`; }
+  s+=`<path d="M40 330 C 160 330, 170 210, 260 230 S 330 460, 400 440 S 480 200, 540 220 S 610 470, 680 440 S 760 200, 820 220 S 900 340, 980 330" stroke="#d4bd96" stroke-width="64" fill="none" stroke-linecap="round"/>
+      <path d="M40 330 C 160 330, 170 210, 260 230 S 330 460, 400 440 S 480 200, 540 220 S 610 470, 680 440 S 760 200, 820 220 S 900 340, 980 330" stroke="#e6d3b1" stroke-width="52" fill="none" stroke-linecap="round"/>`;
+  STATIONS.forEach(st=>{
+    s+=`<g class="station" data-id="${st.id}">
+      <rect x="${st.x-55}" y="${st.y-40}" width="110" height="80" rx="10" fill="${st.wall}" stroke="#b9a587" stroke-width="3"/>
+      <path d="M${st.x-66} ${st.y-36} L${st.x} ${st.y-92} L${st.x+66} ${st.y-36} Z" fill="${st.roof}" stroke="#b9a587" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="${st.x-14}" y="${st.y+2}" width="28" height="38" rx="5" fill="#a77b5a"/>
+      <rect x="${st.x-46}" y="${st.y-28}" width="26" height="22" rx="4" fill="#cfe3e8"/><rect x="${st.x+20}" y="${st.y-28}" width="26" height="22" rx="4" fill="#cfe3e8"/>
+      <rect x="${st.x-30}" y="${st.y-66}" width="60" height="26" rx="8" fill="#fffaf2" stroke="#b9a587" stroke-width="2"/>
+      <text x="${st.x}" y="${st.y-46}" font-size="20" text-anchor="middle">${st.icon}</text>`;
+    if(st.id==='post') s+=`<g><rect x="${st.x+62}" y="${st.y}" width="20" height="26" rx="4" fill="#3e5577"/><rect x="${st.x+70}" y="${st.y+26}" width="4" height="16" fill="#6b5b4a"/></g>`;
+    s+=`</g>`; });
+  $('#mapSvg').innerHTML=s;
+  document.querySelectorAll('.station').forEach(g=>{
+    const st=STATIONS.find(x=>x.id===g.dataset.id);
+    g.addEventListener('mouseenter',()=>{ const l=$('#hoverLabel'); l.innerHTML=`${st.icon} ${st.name}`; l.style.display='block'; placeLabel(st); speak(st.name); });
+    g.addEventListener('mouseleave',()=>{ $('#hoverLabel').style.display='none'; });
+    g.addEventListener('click',()=>{ click(); $('#hoverLabel').style.display='none'; openStation(st.id); });
+  });
+}
+function svgToStage(x,y){ const svg=$('#mapSvg'); const pt=svg.createSVGPoint(); pt.x=x; pt.y=y;
+  const p=pt.matrixTransform(svg.getScreenCTM()); const r=$('#stage').getBoundingClientRect(); return {x:p.x-r.left, y:p.y-r.top}; }
+function placeLabel(st){ const p=svgToStage(st.x, st.y-110); const l=$('#hoverLabel'); l.style.left=(p.x-l.offsetWidth/2)+'px'; l.style.top=(p.y-30)+'px'; }
+function placeAvatar(){ const st=STATIONS.find(s=>s.id===state.lastStation)||STATIONS[0]; const p=svgToStage(st.x+58, st.y+20);
+  const a=$('#mapAvatar'); a.innerHTML=smiley(PALETTE.player,46); a.style.left=(p.x-23)+'px'; a.style.top=(p.y-23)+'px'; }
+function enterMap(){ show('#s-map'); drawMap(); setTimeout(placeAvatar,30); }
+window.addEventListener('resize',()=>{ if($('#s-map').classList.contains('active')) placeAvatar(); });
+
+/* ---------- station frame ---------- */
+let currentStation=null, stationExitHook=null;
+function openStation(id){
+  if(id==='mia'){ state.lastStation='mia'; startScene(false); return; }
+  if(id==='party'){ goParty(); return; }
+  currentStation=id; state.lastStation=id; placeAvatar();
+  const st=STATIONS.find(s=>s.id===id); $('#frameTitle').textContent=st.icon+' '+st.name;
+  $('#frameBody').innerHTML=''; $('#overlay').classList.add('active'); stationExitHook=null;
+  ({post:postOffice,bakery:bakery,supplies:partySupplies,pizza:pizzeria,gift:giftStore})[id]();
+}
+function closeStation(silent){ $('#overlay').classList.remove('active'); $('#frameBody').innerHTML=''; currentStation=null;
+  if('speechSynthesis' in window && !silent) speechSynthesis.cancel(); if($('#s-map').classList.contains('active')) placeAvatar(); }
+$('#exitBtn').onclick=()=>{ click(); const m=document.createElement('div'); m.className='modal';
+  m.innerHTML=`<div class="box">Are you sure you want to leave the game?<br><button class="yes">Yes</button><button class="no">No</button></div>`;
+  $('#frame').appendChild(m); m.querySelector('.no').onclick=()=>m.remove();
+  m.querySelector('.yes').onclick=()=>{ m.remove(); if(stationExitHook) stationExitHook(); closeStation(); }; };
+async function completeStation(id){ state.done[id]=true; await toast('Task completed! Have fun at the party!'); closeStation(); }
+function body(){ return $('#frameBody'); }
+function npc(color,left,top,size=120){ const d=document.createElement('div'); d.className='npc'; d.style.left=left; d.style.top=top; d.innerHTML=smiley(color,size); body().appendChild(d); return d; }
+function say(text,left,top,width){ let b=body().querySelector('.bubble.shop'); if(!b){ b=document.createElement('div'); b.className='bubble shop'; body().appendChild(b);}
+  b.style.left=left; b.style.top=top; if(width) b.style.maxWidth=width; b.textContent=text; return speak(text); }
+
+/* ================= POST OFFICE (invitations) ================= */
+function postOffice(){
+  const B=body();
+  if(state.done.post){ npc(PALETTE.shop.post,'70%','40%'); say('Sorry, no refunds available','45%','15%'); return; }
+  B.innerHTML=`<div class="card" style="position:absolute;left:2%;top:8%;width:24%;height:80%"><b>List of friends</b><div id="srcList" data-drop="src" style="height:90%;margin-top:8px"></div></div>
+    <div class="card" style="position:absolute;left:52%;top:8%;width:24%;height:80%"><b>A → Z</b> <span id="alphaHint"></span><div id="slots" style="margin-top:8px"></div>
+      <button class="btn green" id="finBtn" style="position:absolute;bottom:10px;left:10px">Finished</button></div>
+    <button class="btn" id="hintBtn" style="position:absolute;left:52%;top:91%">★ Hint</button>
+    <div id="mailbox" data-drop="mailbox" style="position:absolute;left:80%;top:68%;width:70px;height:90px;background:#3e5577;border-radius:10px 10px 4px 4px;display:flex;align-items:center;justify-content:center;color:white;font-size:12px">mailbox</div>`;
+  const clerk=npc(PALETTE.shop.post,'80%','34%',110); clerk.id='clerk';
+  say('Hello! Please sort the list of friends from A to Z to make invitations!','28%','2%','22%');
+  const names=[...GUESTS].sort(()=>Math.random()-.5);
+  const slots=$('#slots'); for(let i=0;i<names.length;i++){ slots.insertAdjacentHTML('beforeend',`<div data-drop="slot" data-i="${i}" style="height:36px;border-bottom:2px solid var(--line);font-size:20px;display:flex;align-items:center;gap:6px"><span style="color:var(--muted);width:24px">${i+1}.</span><span class="slotName"></span></div>`); }
+  const nameEl=n=>{ const d=document.createElement('div'); d.textContent=n; d.dataset.name=n;
+    Object.assign(d.style,{fontSize:'20px',padding:'4px 10px',margin:'4px 0',background:'#fff',border:'2px solid var(--line)',borderRadius:'10px',display:'inline-block'});
+    makeDraggable(d,(drop)=>{ if(!drop) return;
+      if(drop.dataset.drop==='slot'){ const holder=drop.querySelector('.slotName'); const prev=holder.firstChild; if(prev) $('#srcList').appendChild(prev); holder.appendChild(d); }
+      else if(drop.dataset.drop==='src'){ $('#srcList').appendChild(d); } });
+    return d; };
+  names.forEach(n=>{ const e=nameEl(n); $('#srcList').appendChild(e); $('#srcList').appendChild(document.createElement('br')); });
+  $('#hintBtn').onclick=()=>{ click(); $('#alphaHint').innerHTML='<div style="font-size:14px;color:var(--muted);letter-spacing:2px">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>'; };
+  const sorted=[...GUESTS].sort();
+  $('#finBtn').onclick=()=>{ click(); let allOk=true;
+    document.querySelectorAll('[data-drop=slot]').forEach((s,i)=>{ const n=s.querySelector('[data-name]');
+      if(!n || n.dataset.name!==sorted[i]){ allOk=false; if(n) $('#srcList').appendChild(n); } });
+    if(allOk){ document.querySelectorAll('[data-drop=slot] [data-name]').forEach(n=>n.style.fontWeight='bold'); chooseStyle(); } };
+  function chooseStyle(){
+    say('Great Job! Which invitations would you like?','28%','2%','22%');
+    $('#finBtn').remove(); $('#hintBtn').remove();
+    const box=document.createElement('div'); box.className='row'; Object.assign(box.style,{position:'absolute',left:'2%',top:'30%',width:'48%',background:'var(--panel)',padding:'10px',borderRadius:'18px',zIndex:5});
+    const designs=[['Mermaid','#7ec4c7','🧜‍♀️🐚'],['Pirate','#5f5a52','🏴‍☠️⚓'],['Dinosaurs','#8dbb6d','🦕🦖']];
+    designs.forEach(([n,c,e])=>{ const card=document.createElement('div'); card.className='card'; card.style.cursor='pointer'; card.style.flex='1'; card.style.textAlign='center';
+      card.innerHTML=`<div style="height:90px;border-radius:10px;background:${c};display:flex;align-items:center;justify-content:center;font-size:34px">${e}</div><div style="margin-top:6px">${n}</div>`;
+      card.onclick=async()=>{ click(); box.remove(); const cost=GUESTS.length*25;
+        await say(`That will be ${money(cost)}, please.`,'28%','2%','22%');
+        await payWithCoins(cost,$('#clerk'));
+        addInv('Invitations',`${GUESTS.length} ${n.toLowerCase()} invitations`);
+        await say('Goodbye! Remember to mail your invitations!','28%','2%','22%');
+        const env=document.createElement('div'); env.id='envelope'; env.innerHTML='✉️<div style="font-size:13px">invitations</div>';
+        Object.assign(env.style,{position:'absolute',left:'60%',top:'80%',fontSize:'40px',textAlign:'center'}); body().appendChild(env);
+        makeDraggable(env,async(drop)=>{ if(drop && drop.dataset.drop==='mailbox'){ env.remove();
+          state.inventory['Invitations']=state.inventory['Invitations'].map(x=>x+' (mailed)'); await completeStation('post'); } });
+      };
+      box.appendChild(card); });
+    body().appendChild(box);
+  }
+}
+
+/* ================= BAKERY ================= */
+const BAKERY_WORDS=[ // PLACEHOLDER list (lead creator's draft list; final list not decided)
+  {w:'cake',parts:['cake'],icon:'🎂'},{w:'bread',parts:['bread'],icon:'🍞'},{w:'bagel',parts:['ba','gel'],icon:'🥯'},
+  {w:'muffin',parts:['muf','fin'],icon:'🧁'},{w:'pie',parts:['pie'],icon:'🥧'},{w:'cookie',parts:['coo','kie'],icon:'🍪'},{w:'tart',parts:['tart'],icon:'🍓'}];
+function bakery(){
+  const basket=[]; const B=body();
+  B.innerHTML=`<div class="card" style="position:absolute;left:2%;top:4%;width:26%;height:66%"><b>Shopping List</b><div id="wordList"></div></div>
+   <div id="basket" style="position:absolute;left:2%;bottom:2%;width:26%;height:22%;background:#e7c99c;border-radius:10px 10px 40px 40px;padding:8px;font-size:28px"></div>
+   <div id="spell" style="position:absolute;left:32%;top:24%;width:44%;"></div>
+   <button class="btn green" id="bakeDone" style="position:absolute;right:2%;bottom:2%;display:none">Finish</button>
+   <div class="placeholder-note">Placeholder: word list, required words, what happens after 3 tries, and the Finish button are not decided yet.</div>`;
+  npc(PALETTE.shop.bakery,'82%','38%',110);
+  say("Let's buy bread for the party guests!",'55%','2%','280px');
+  const list=$('#wordList');
+  BAKERY_WORDS.forEach(o=>{ const r=document.createElement('div'); r.style.cssText='font-size:22px;padding:4px 6px;cursor:pointer;border-radius:10px';
+    r.innerHTML=`${o.icon} <span class="wd">${o.w[0].toUpperCase()+o.w.slice(1)}</span>`; r.onclick=()=>pick(o,r); list.appendChild(r); });
+  let busy=false;
+  async function sayThree(o, highlightEls){ // whole, sounded out by parts, whole
+    const all=()=>highlightEls.forEach(e=>e.style.background='#f6dc8a'); const none=()=>highlightEls.forEach(e=>e.style.background='');
+    all(); await speak(o.w,{rate:.9}); none();
+    let idx=0; for(const p of o.parts){ const els=highlightEls.slice(idx, idx+p.length); els.forEach(e=>e.style.background='#f6dc8a');
+      await speak(p,{rate:.7,silentMs:600}); els.forEach(e=>e.style.background=''); idx+=p.length; }
+    all(); await speak(o.w,{rate:.9}); none(); }
+  async function pick(o,row){ if(busy) return; busy=true; click();
+    row.style.fontSize='30px'; const letters=[...row.querySelector('.wd').textContent].map(ch=>{const s=document.createElement('span'); s.textContent=ch; return s;});
+    const wd=row.querySelector('.wd'); wd.textContent=''; letters.forEach(s=>wd.appendChild(s));
+    await sayThree(o, letters); row.style.fontSize='22px'; busy=false; spellPanel(o); }
+  function spellPanel(o){
+    let tries=0; const S=$('#spell');
+    S.innerHTML=`<div class="card" style="text-align:center"><button class="btn" id="hear">🔊 ${o.icon}</button>
+      <div id="dots" style="display:flex;gap:10px;justify-content:center;margin:18px 0;font-size:34px"></div>
+      <input class="answer" id="spellIn" style="width:240px" autocomplete="off"> <div class="hint-text">Type the word and press Enter</div><div id="spellMsg" style="margin-top:8px;font-size:20px"></div></div>`;
+    const dots=$('#dots'); const cells=[...o.w].map(()=>{const d=document.createElement('div'); d.textContent='•'; d.style.cssText='width:36px;border-radius:8px'; dots.appendChild(d); return d;});
+    $('#hear').onclick=()=>sayThree(o,cells);
+    const inp=$('#spellIn'); inp.focus();
+    inp.onkeydown=async e=>{ if(e.key!=='Enter') return; const v=inp.value.trim().toLowerCase(); tries++;
+      cells.forEach((c,i)=>{ const ch=v[i]||''; c.textContent=ch||'•'; c.style.background = ch===o.w[i]?'#bfe0a8':'#f1b5aa'; });
+      if(v===o.w){ $('#spellMsg').textContent='Correct!'; basket.push(o); $('#basket').textContent=basket.map(b=>b.icon).join(' '); $('#bakeDone').style.display='block';
+        setTimeout(()=>{S.innerHTML='';},1200); }
+      else if(tries>=3){ cells.forEach((c,i)=>{c.textContent=o.w[i]; c.style.background='#f6dc8a';}); $('#spellMsg').textContent='This is how we spell it.'; inp.disabled=true; setTimeout(()=>{S.innerHTML='';},2600); }
+      else { $('#spellMsg').textContent=`Try again (${3-tries} left)`; inp.value=''; } };
+  }
+  $('#bakeDone').onclick=async()=>{ click(); basket.forEach(b=>addInv('Bakery',b.w)); await completeStation('bakery'); };
+}
+
+/* ================= PARTY SUPPLIES ================= */
+const SUPPLY_PRICES={balloon:50, platePack:200, decor:{Mermaid:1000,Pirate:800,Dinosaurs:600}}; // PLACEHOLDER prices
+function partySupplies(){
+  const B=body(); const cart={balloons:0,packs:0,decor:null};
+  if(state.done.supplies){ return suppliesReturn(); }
+  npc(PALETTE.shop.supplies,'84%','40%',110);
+  say("Welcome to the Party Supplies. Let's get everything ready for the birthday party.",'50%','2%','330px').then(balloons);
+  function balloons(){
+    say('We need 10 balloons for the party! Can you help me count them?','50%','2%','330px');
+    const area=document.createElement('div'); area.style.cssText='position:absolute;left:2%;top:20%;width:40%;height:70%;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start';
+    const bk=document.createElement('div'); bk.dataset.drop='basket'; bk.style.cssText='position:absolute;left:46%;top:36%;width:34%;height:54%;background:#e7c99c;border-radius:10px 10px 50px 50px;display:flex;flex-wrap:wrap;gap:4px;padding:10px;align-content:flex-start';
+    body().append(area,bk);
+    const cols=['#7ec4c7','#9fd8bc','#b9a3d6','#e5a3b8','#ead26a','#d9776a','#6f93c4','#e39b5b']; // PLACEHOLDER colours (mermaid colours not decided)
+    const balloonEl=(c)=>{ const d=document.createElement('div'); d.innerHTML=`<svg width="40" height="56" viewBox="0 0 40 56"><ellipse cx="20" cy="20" rx="16" ry="19" fill="${c}"/><path d="M20 39v16" stroke="#8a7d6e"/></svg>`; d.style.position='relative'; return d; };
+    for(let i=0;i<16;i++){ const b=balloonEl(cols[i%cols.length]); area.appendChild(b);
+      makeDraggable(b,drop=>{ if(drop&&drop.dataset.drop==='basket'){ const nb=balloonEl(cols[i%cols.length]); nb.style.cursor='pointer'; nb.onclick=()=>{nb.remove();renum();}; bk.appendChild(nb); renum(); } }); }
+    function renum(){ [...bk.children].forEach((c,i)=>{ let n=c.querySelector('.num'); if(!n){n=document.createElement('div'); n.className='num'; n.style.cssText='position:absolute;top:-4px;left:12px;font-weight:bold'; c.appendChild(n);} n.textContent=i+1; }); }
+    const fin=document.createElement('button'); fin.className='btn green'; fin.textContent='Finish'; fin.style.cssText='position:absolute;left:46%;top:92%';
+    body().appendChild(fin);
+    fin.onclick=async()=>{ click(); if(bk.children.length===10){ cart.balloons=10; await say('Great job!','50%','2%'); area.remove(); bk.remove(); fin.remove(); plates(); }
+      else say("Not quite! Let's count again!",'50%','2%'); };
+  }
+  function plates(){
+    say('10 guests are coming to the party. Plates come in packs of 4. How many packs do we need?','50%','2%','330px');
+    const table=document.createElement('div'); table.style.cssText='position:absolute;left:4%;top:30%;width:58%;height:40%;background:#d9b99b;border-radius:30px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:18px';
+    const spots=[]; for(let i=0;i<10;i++){ const s=document.createElement('div'); s.style.cssText='border:3px dashed #a9886a;border-radius:50%;aspect-ratio:1'; spots.push(s); table.appendChild(s);}
+    table.dataset.drop='table'; spots.forEach(s=>s.dataset.drop='table');
+    const pack=document.createElement('div'); pack.innerHTML='<div style="font-size:42px">🍽️</div><div>pack of 4</div>'; pack.style.cssText='position:absolute;left:68%;top:46%;text-align:center;background:white;border:3px solid var(--line);border-radius:14px;padding:6px';
+    let placed=0, packs=0; body().append(table,pack);
+    makeDraggable(pack,async drop=>{ if(!(drop&&drop.dataset.drop==='table')) return; packs++;
+      for(let k=0;k<4;k++){ if(placed<10){ spots[placed].style.background='#fffaf2'; spots[placed].style.border='3px solid #e2d5c2'; placed++; } }
+      if(placed<10) say('We need more plates!','50%','2%');
+      else { cart.packs=packs; await say('Great job! Now everyone has a plate!','50%','2%'); table.remove(); pack.remove(); decor(); } });
+  }
+  function decor(){
+    say('Which decorations would you like?','50%','2%','330px');
+    const row=document.createElement('div'); row.className='row'; row.style.cssText='position:absolute;left:2%;top:28%;width:76%';
+    [['Mermaid','#7ec4c7','🧜‍♀️🐚🌊'],['Pirate','#5f5a52','🏴‍☠️⚓🦜'],['Dinosaurs','#8dbb6d','🦕🦖🌿']].forEach(([n,c,e])=>{ // PLACEHOLDER sets
+      const card=document.createElement('div'); card.className='card'; card.style.cssText='flex:1;text-align:center;cursor:pointer';
+      card.innerHTML=`<div style="height:110px;border-radius:12px;background:${c};display:flex;align-items:center;justify-content:center;font-size:36px">${e}</div><div>${n} set</div><div class="hint-text">${money(SUPPLY_PRICES.decor[n])}</div>`;
+      card.onclick=()=>{ click(); cart.decor=n; row.remove(); checkout(); }; row.appendChild(card); });
+    body().appendChild(row);
+  }
+  function checkout(){
+    const lines=[['10 balloons',cart.balloons*SUPPLY_PRICES.balloon],[`${cart.packs} packs of plates`,cart.packs*SUPPLY_PRICES.platePack]];
+    if(cart.decor) lines.push([`${cart.decor} decorations`,SUPPLY_PRICES.decor[cart.decor]]);
+    const total=lines.reduce((a,l)=>a+l[1],0);
+    const w=document.createElement('div'); w.className='card'; w.style.cssText='position:absolute;left:10%;top:22%;width:50%;font-size:20px';
+    w.innerHTML='<b>Checkout</b>'+lines.map(l=>`<div style="display:flex;justify-content:space-between"><span>${l[0]}</span><span>${money(l[1])}</span></div>`).join('')+
+      `<hr><div style="display:flex;justify-content:space-between"><b>Total</b><b>${money(total)}</b></div><button class="btn green" id="buy" style="margin-top:12px">Buy</button>`;
+    body().appendChild(w);
+    $('#buy').onclick=async()=>{ click();
+      if(total>state.walletCents){ say("Oops! We don't have enough money. Let's see what we can change!",'50%','2%','330px'); return; }
+      w.remove(); await payWithCoins(total, body().querySelector('.npc'));
+      addInv('Party supplies','10 balloons'); addInv('Party supplies',`${cart.packs*4} plates`); if(cart.decor){ addInv('Party supplies',`${cart.decor} decorations`); state.decorations=cart.decor; }
+      await say('Thank you for shopping at Party Supplies, have fun at the party and hope to see you again soon!','50%','2%','330px');
+      await completeStation('supplies'); };
+  }
+  function suppliesReturn(){
+    npc(PALETTE.shop.supplies,'84%','40%',110); say('Welcome back!','50%','2%');
+    if(state.decorations){ const b=document.createElement('button'); b.className='btn'; b.textContent=`Return ${state.decorations} decorations`; b.style.cssText='position:absolute;left:10%;top:40%';
+      b.onclick=()=>{ click(); const refund=SUPPLY_PRICES.decor[state.decorations]; state.walletCents+=refund; updateWallet();
+        state.inventory['Party supplies']=state.inventory['Party supplies'].filter(x=>!x.includes('decorations')); state.decorations=null; b.remove(); say(`Here is ${money(refund)} back.`,'50%','2%'); };
+      body().appendChild(b); }
+  }
+}
+
+/* ================= PIZZERIA ================= */
+const PIZZAS=[{n:'Cheese',price:7,top:'cheese'},{n:'Tomato and broccoli',price:8,top:'veg'},{n:'Pepperoni',price:9,top:'pep'}];
+const PEOPLE=10;
+function pizzaSvg(type,size=110){ let t='';
+  if(type==='veg'){ for(let i=0;i<6;i++){const a=i*1.05;t+=`<circle cx="${50+26*Math.cos(a)}" cy="${50+26*Math.sin(a)}" r="6" fill="#d9584a"/>`;} t+=`<circle cx="44" cy="42" r="6" fill="#5f9a52"/><circle cx="60" cy="62" r="6" fill="#5f9a52"/><rect x="52" y="34" width="10" height="6" rx="2" fill="#e8d2b0"/><rect x="36" y="58" width="10" height="6" rx="2" fill="#e8d2b0"/>`; }
+  if(type==='pep'){ for(let i=0;i<7;i++){const a=i*0.9;t+=`<circle cx="${50+24*Math.cos(a)}" cy="${50+24*Math.sin(a)}" r="7" fill="#b9473d"/>`;} }
+  let cuts=''; for(let i=0;i<4;i++){const a=i*Math.PI/4; cuts+=`<path d="M${50+44*Math.cos(a)} ${50+44*Math.sin(a)} L${50-44*Math.cos(a)} ${50-44*Math.sin(a)}" stroke="#d6a65c" stroke-width="1.5"/>`;}
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#e7b46a"/><circle cx="50" cy="50" r="39" fill="#f6d77d"/>${t}${cuts}</svg>`; }
+function pizzeria(){
+  const B=body();
+  B.innerHTML=`<div style="position:absolute;left:4%;top:18%;width:56%;height:36%;background:#f0e2cf;border:3px solid var(--line);border-radius:16px;display:flex;justify-content:space-around;align-items:center;perspective:500px" id="display"></div>
+    <div style="position:absolute;left:62%;top:56%;width:36%;height:30%;background:#c98b6b;border-radius:14px"></div>`;
+  PIZZAS.forEach(p=>{ const d=document.createElement('div'); d.innerHTML=pizzaSvg(p.top,120); d.style.transform='rotateX(45deg)'; $('#display').appendChild(d); });
+  const cashier=npc(PALETTE.shop.pizza,'72%','28%',120); cashier.style.cursor='pointer'; cashier.id='cashier';
+  const pl=npc(PALETTE.player,'30%','64%',100);
+  say('(Click the cashier)','62%','6%');
+  cashier.onclick=async()=>{ cashier.onclick=null; click();
+    const b=document.createElement('div'); b.className='bubble'; b.style.left='8%'; b.style.top='58%'; b.textContent=`I need to buy pizza for my friend's birthday party. We have ${PEOPLE} guests. Can you help me?`; body().appendChild(b);
+    await speak(b.textContent); b.remove();
+    await say('Yes, usually for a party we want to have at least 2 slices of pizza per person.','45%','4%','360px');
+    table(); };
+  function table(){
+    body().innerHTML=''; const counts=[0,0,0];
+    const top=document.createElement('div'); top.className='row'; top.style.cssText='justify-content:space-around;margin-top:4px';
+    PIZZAS.forEach((p,i)=>{ const c=document.createElement('div'); c.style.cssText='display:flex;align-items:center;gap:8px';
+      c.innerHTML=`<button class="btn" style="background:var(--red);box-shadow:0 3px 0 #a9584d;font-size:24px" data-m="${i}">−</button>
+        <div style="text-align:center">${pizzaSvg(p.top,80)}<div style="font-size:15px">${p.n}</div><div class="hint-text">$${p.price}</div><div><b id="cnt${i}">0</b></div></div>
+        <button class="btn green" style="font-size:24px" data-p="${i}">+</button>`; top.appendChild(c); });
+    const grid=document.createElement('div'); grid.id='grid'; grid.style.cssText=`display:grid;grid-template-columns:repeat(${PEOPLE},1fr);gap:6px;margin:12px auto;width:92%`;
+    const heads=document.createElement('div'); heads.style.cssText=`display:grid;grid-template-columns:repeat(${PEOPLE},1fr);gap:6px;margin:0 auto;width:92%`;
+    const people=[PALETTE.player,PALETTE.mia,...GUESTS.map(g=>PALETTE.guests[g])]; people.forEach(c=>heads.insertAdjacentHTML('beforeend',`<div style="text-align:center">${smiley(c,34)}</div>`));
+    const done=document.createElement('button'); done.className='btn green'; done.textContent='Done'; done.style.cssText='display:block;margin:6px auto';
+    body().append(top,heads,grid,done);
+    const slices=()=>counts.reduce((a,c,i)=>a.concat(Array(c*8).fill(i)),[]);
+    function render(){ const s=slices(); const rows=Math.max(2,Math.ceil(s.length/PEOPLE)); grid.innerHTML='';
+      for(let k=0;k<rows*PEOPLE;k++){ const cell=document.createElement('div'); cell.style.cssText='height:34px;border:2px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;background:#fff';
+        if(k<s.length){ cell.style.border='2px solid #e2c28a'; cell.innerHTML=`<svg width="26" height="26" viewBox="0 0 30 30"><path d="M15 27 L3 5 Q15 0 27 5 Z" fill="${['#f6d77d','#f2c46d','#f0bf68'][s[k]]}" stroke="#d6a65c"/>${s[k]===2?'<circle cx="15" cy="11" r="3" fill="#b9473d"/>':s[k]===1?'<circle cx="13" cy="10" r="2.5" fill="#5f9a52"/><circle cx="18" cy="14" r="2.5" fill="#d9584a"/>':''}</svg>`; }
+        grid.appendChild(cell); }
+      counts.forEach((c,i)=>$('#cnt'+i).textContent=c+' pizza'+(c===1?'':'s')); }
+    top.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{click();counts[+b.dataset.p]++;render();});
+    top.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{click();const i=+b.dataset.m; if(counts[i]>0)counts[i]--; render();});
+    render();
+    done.onclick=()=>{ click(); const total=slices().length; questions(total, counts); };
+  }
+  function ask(q, answer){ return new Promise(res=>{
+    const m=document.createElement('div'); m.className='modal'; m.innerHTML=`<div class="box">${q}<br><input class="answer" autocomplete="off"><div class="msg" style="min-height:28px;font-size:18px;color:var(--red)"></div><button class="no">OK</button></div>`;
+    $('#frame').appendChild(m); const inp=m.querySelector('input'); inp.focus(); speak(q);
+    const check=()=>{ if(String(parseInt(inp.value,10))===String(answer)){ m.remove(); res(); } else { m.querySelector('.msg').textContent='Are you sure? Can you double check?'; speak('Are you sure? Can you double check?'); inp.value=''; inp.focus(); } };
+    m.querySelector('button').onclick=check; inp.onkeydown=e=>{ if(e.key==='Enter') check(); }; }); }
+  async function questions(total, counts){
+    await ask('How many slices will each guest have?', Math.floor(total/PEOPLE));
+    await ask('How many extra pieces do you have that will be left over?', total%PEOPLE);
+    const cost=counts.reduce((a,c,i)=>a+c*PIZZAS[i].price,0);
+    const sum=counts.map((c,i)=>c?`${c} × ${PIZZAS[i].n} ($${PIZZAS[i].price})`:'').filter(Boolean).join('<br>')||'No pizzas';
+    await ask(`<div style="font-size:18px;margin-bottom:8px">${sum}</div>How much money will all of the pizzas together cost?`, cost);
+    confetti($('#frame')); await toast('Well done!',1800);
+    if(cost>0) await payWithCoins(cost*100, $('#exitBtn'));
+    counts.forEach((c,i)=>{ if(c) addInv('Pizza',`${c} ${PIZZAS[i].n.toLowerCase()} pizza${c>1?'s':''}`); });
+    state.pizzaSlices=total; await completeStation('pizza'); }
+}
+
+/* ================= GIFT STORE (layout only) ================= */
+function giftStore(){
+  const B=body(); let shelves='';
+  for(let r=0;r<3;r++){ shelves+=`<div style="position:absolute;left:4%;top:${10+r*26}%;width:60%;height:6px;background:#c9a77f;border-radius:3px"></div>`;
+    for(let k=0;k<4;k++) shelves+=`<div style="position:absolute;left:${8+k*14}%;top:${10+r*26-13}%;width:9%;height:12%;background:#fff;border:3px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:24px">?</div>`; }
+  B.innerHTML=shelves+`<div style="position:absolute;left:66%;top:62%;width:30%;height:22%;background:#c98b6b;border-radius:12px"></div>
+    <div class="placeholder-note" style="font-size:16px">Placeholder: this station's gifts, prices, wrapping steps and designs are not decided yet. Layout only.</div>`;
+  npc(PALETTE.shop.gift,'76%','34%',110); say('Hello!','62%','6%');
+}
+
+/* ================= PARTY ROOM ================= */
+async function goParty(){
+  if(state.partyStarted) return; state.partyStarted=true; closeStation(true);
+  clearInterval(state.timerId); show('#s-party');
+  const P=$('#s-party'); const decor=state.decorations;
+  const garland = decor ? `<div style="position:absolute;left:0;right:0;top:8%;text-align:center;font-size:40px;letter-spacing:18px">${({Mermaid:'🐚🧜‍♀️🌊🐚🧜‍♀️🌊🐚',Pirate:'🏴‍☠️⚓🦜🏴‍☠️⚓🦜',Dinosaurs:'🦕🦖🌿🦕🦖🌿'})[decor]}</div>` : '';
+  const food=[...(state.inventory['Bakery']||[]).map(w=>BAKERY_WORDS.find(o=>o.w===w).icon), ...((state.inventory['Pizza']||[]).length?['🍕']:[])].join(' ');
+  const balloons=(state.inventory['Party supplies']||[]).some(x=>x.includes('balloons')) ? '<div style="position:absolute;left:4%;top:14%;font-size:54px">🎈🎈</div><div style="position:absolute;right:4%;top:14%;font-size:54px">🎈🎈</div>' : '';
+  P.innerHTML=`<div style="position:absolute;inset:0;background:#f4e2cc"></div><div style="position:absolute;left:0;right:0;bottom:0;height:30%;background:#dcc29c"></div>
+    ${garland}${balloons}
+    <div style="position:absolute;left:30%;top:58%;width:40%;height:12%;background:#c98b6b;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:38px">${food}</div>
+    <div id="partyMia" class="npc" style="left:44%;top:30%">${smiley(PALETTE.mia,120)}</div>
+    <div id="partyPeople"></div><div id="partyBubble" class="bubble" style="left:52%;top:6%;display:none"></div>`;
+  const ppl=[PALETTE.player,...GUESTS.map(g=>PALETTE.guests[g])];
+  ppl.forEach((c,i)=>{ const d=document.createElement('div'); d.className='npc'; d.style.left=(4+i*10.6)+'%'; d.style.top=(i%2?'74%':'80%'); d.innerHTML=smiley(c,64); $('#partyPeople').appendChild(d); });
+  const lines=['Thank you for all the work you have done for my party!'];
+  if(state.pizzaSlices < PEOPLE*2) lines.push('My friends were still a little bit hungry.'); // wording PLACEHOLDER
+  if(state.walletCents>0) lines.push(`Wow! You still have ${money(state.walletCents)}. Thanks for doing all that for me!`);
+  const b=$('#partyBubble'); b.style.display='block';
+  for(const l of lines){ b.textContent=l; await speak(l,{silentMs:2200}); }
+  const again=document.createElement('button'); again.className='big-btn'; again.textContent='Play again'; again.style.cssText='position:absolute;left:24px;top:24px';
+  again.onclick=()=>location.reload(); P.appendChild(again);
+}
+
+updateWallet();
+</script>
+</body>
+</html>
